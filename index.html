@@ -210,15 +210,53 @@ tr:hover td{background:#FAFAF7}
 4️⃣ <b>推荐玩法</b>：年限选 <b>10 年</b>，开 1-2 条理论曲线（比如 10% / 13%）+ 勾选"苹果"或"标普 500"——你会发现：真实苹果<b>跑赢了 13% 理论曲线</b>，但路径上有数次 -20%~-30% 回撤。
 </div>
 
-<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;align-items:center">
+<div style="display:flex;gap:10px;flex-wrap:wrap;font-size:13px;align-items:center">
 <button class="preset-btn" id="histQuickBtn" style="background:#E6F1FB;border-color:#185FA5">⚡ 一键切换到 10 年视图</button>
-<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="MOUTAI"> 🇨🇳 茅台 (sh600519, 后复权)</label>
-<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="TENCENT"> 🇭🇰 腾讯 (00700, 后复权)</label>
-<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="APPLE"> 🇺🇸 苹果 (AAPL, 后复权)</label>
-<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="SPX"> 🇺🇸 标普 500</label>
 </div>
 
-<div class="note" style="margin-top:8px">数据时间窗：2015-09 至 2026-06（约 10.7 年）· 月度采样后下采样为年线 · 数据源：westock-data 后复权 K 线</div>
+<div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:8px;font-size:13px">
+<div style="grid-column:1/-1;font-size:11px;color:#888780;font-weight:600;margin-top:4px">📊 主流指数（推荐）</div>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="SPX"> <span>🇺🇸 标普 500（含股息口径见说明）</span> <a href="https://finance.yahoo.com/quote/%5EGSPC/" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="NASDAQ"> <span>🇺🇸 纳斯达克综合指数</span> <a href="https://finance.yahoo.com/quote/%5EIXIC/" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="QQQ"> <span>🇺🇸 纳斯达克 100 (QQQ ETF)</span> <a href="https://finance.yahoo.com/quote/QQQ/" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="CSI300"> <span>🇨🇳 沪深 300（点位口径）</span> <a href="https://www.csindex.com.cn/zh-CN/indices/index-detail/000300" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="HSI"> <span>🇭🇰 恒生指数</span> <a href="https://www.hsi.com.hk/eng/indexes/all-indexes/hsi" target="_blank" class="ds">📎</a></label>
+
+<div style="grid-column:1/-1;font-size:11px;color:#888780;font-weight:600;margin-top:8px">🥇 避险/另类</div>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="GLD"> <span>🥇 黄金 (GLD ETF, 美元计价)</span> <a href="https://finance.yahoo.com/quote/GLD/" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="TLT"> <span>📜 美 20 年长期国债 (TLT ETF)</span> <a href="https://finance.yahoo.com/quote/TLT/" target="_blank" class="ds">📎</a></label>
+
+<div style="grid-column:1/-1;font-size:11px;color:#888780;font-weight:600;margin-top:8px">🏢 个股（教育用）</div>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="MOUTAI"> <span>🇨🇳 茅台 (sh600519, 后复权)</span> <a href="https://gu.qq.com/sh600519" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="TENCENT"> <span>🇭🇰 腾讯 (00700, 后复权)</span> <a href="https://gu.qq.com/hk00700" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="APPLE"> <span>🇺🇸 苹果 (AAPL, 后复权)</span> <a href="https://finance.yahoo.com/quote/AAPL/" target="_blank" class="ds">📎</a></label>
+</div>
+
+<div class="note" style="margin-top:10px;line-height:1.7">
+<b>📌 数据口径说明</b><br>
+• <b>个股 / ETF（QQQ/GLD/TLT/苹果/茅台/腾讯）</b>：使用<b>后复权价格</b>，已包含分红再投资。<br>
+• <b>指数（标普 500/纳斯达克/沪深 300/恒生）</b>：默认是<b>价格指数（Price Return, PR）</b>，<b>不含股息</b>——这就是为什么标普 PR 长期年化 ~7-8%，而含股息（Total Return, TR）约 10%。下方的"股息再投开关"可以一键叠加历史股息。<br>
+• <b>数据源</b>：westock-data（腾讯自选股 K 线）；点 📎 跳转到对应 Yahoo Finance / 中证指数官方页面查原始数据。<br>
+• <b>数据时间窗</b>：2015-09 ~ 2026-06（约 10.7 年），下采样为年线。
+</div>
+
+<div style="margin-top:14px;padding:12px 14px;background:#F1F8F1;border-left:3px solid #1D7A4F;border-radius:6px">
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+<input type="checkbox" id="dividendOn" checked>
+<span><b>💰 指数加股息再投修正</b>（让指数 PR 接近 TR）</span>
+</label>
+<div style="font-size:12px;color:#5F5E5A;margin-top:6px;line-height:1.6">
+开启后，<b>仅对"价格指数"</b>（标普/纳指/沪深300/恒生）按各自<b>历史平均股息率</b>叠加复利修正：标普 +1.8%/年、纳指 +0.8%、沪深300 +2.2%、恒生 +3.5%。<br>
+个股/ETF（已含分红）和黄金/国债（无股息或已含票息）<b>不受影响</b>。
+</div>
+</div>
+
+<style>
+.hist-row{display:flex;align-items:center;gap:6px;padding:6px 10px;border:0.5px solid rgba(0,0,0,0.08);border-radius:6px;cursor:pointer;transition:all .12s}
+.hist-row:hover{border-color:#185FA5;background:#FAFAF7}
+.hist-row a.ds{margin-left:auto;text-decoration:none;font-size:12px;opacity:0.5;color:#185FA5}
+.hist-row a.ds:hover{opacity:1}
+</style>
 </div>
 </details>
 
@@ -534,9 +572,50 @@ function buildCurvesUI(){
 function buildChart(maxY){
   const years = Array.from({length:maxY+1},(_,i)=>i);
   if(chart) chart.destroy();
+  // 自定义 plugin：里程碑竖线 + 黑天鹅竖线
+  const milestonePlugin = {
+    id:'milestones',
+    beforeDraw(chart){
+      const {ctx, chartArea, scales} = chart;
+      if(!chartArea) return;
+      const ms = (maxY<=10 ? [1,3,5,7,10] : maxY<=20 ? [5,10,15,20] : [10,20,30,50,70]).filter(y=>y<=maxY);
+      ctx.save();
+      ms.forEach(y=>{
+        const x = scales.x.getPixelForValue(y);
+        ctx.strokeStyle = 'rgba(24,95,165,0.10)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3,4]);
+        ctx.beginPath();
+        ctx.moveTo(x, chartArea.top);
+        ctx.lineTo(x, chartArea.bottom);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(24,95,165,0.55)';
+        ctx.font = '10px -apple-system,sans-serif';
+        ctx.fillText(y+'年', x+3, chartArea.top+12);
+      });
+      // 黑天鹅
+      ctx.setLineDash([]);
+      (BLACK_SWANS||[]).forEach(b=>{
+        if(b.year<=maxY){
+          const x = scales.x.getPixelForValue(b.year);
+          ctx.strokeStyle = 'rgba(163,45,45,0.55)';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(x, chartArea.top);
+          ctx.lineTo(x, chartArea.bottom);
+          ctx.stroke();
+          ctx.fillStyle = '#A32D2D';
+          ctx.font = '10px -apple-system,sans-serif';
+          ctx.fillText(`🦢 ${b.label} -${b.dropPct}%`, x+4, chartArea.top+28);
+        }
+      });
+      ctx.restore();
+    }
+  };
   chart = new Chart(ctx,{
     type:'line',
     data:{labels:years,datasets:[]},
+    plugins:[milestonePlugin],
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
@@ -665,22 +744,41 @@ function update(){
       const rows = HIST_DATA[sym];
       const startPrice = rows[0][1];
       const scale = p/startPrice;
-      // 年线下采样：每 12 个月取一个点
+      // 股息修正（仅价格指数）
+      const isPR = HIST_IS_PR[sym] && DIVIDEND_ON;
+      const divRate = isPR ? HIST_DIV[sym] : 0;
       const data = [];
       for(let y=0; y<=maxY; y++){
         const idx = y*12;
-        if(idx<rows.length) data.push(rows[idx][1]*scale);
+        if(idx<rows.length){
+          const px = rows[idx][1]*scale;
+          // 在年度位置叠加股息复利修正：×(1+d)^y
+          data.push(px * Math.pow(1+divRate, y));
+        }
         else data.push(null);
       }
       const dataYears = Math.floor(rows.length/12);
+      const divTag = isPR ? `（含股息 +${(divRate*100).toFixed(1)}%）` : (HIST_IS_PR[sym]?'（PR价格指数）':'');
       datasets.push({
-        label: HIST_LABEL[sym]+`（实盘 ~${dataYears} 年`+(maxY>dataYears?'，超出后断开':'')+'）',
+        label: HIST_LABEL[sym]+`实盘 ~${dataYears}年`+divTag+(maxY>dataYears?'，超出后断开':''),
         data: data,
         borderColor: HIST_COLOR[sym],
         backgroundColor: HIST_COLOR[sym]+'05',
         borderWidth: 2.5, pointRadius:3, pointStyle:'rectRot', tension:0.1,
         borderDash:[4,3], spanGaps:false
       });
+    });
+  }
+
+  // === 黑天鹅时间轴 ===
+  // 在主图上以 Chart.js annotation 风格的额外 dataset 实现：用透明竖线
+  if(BLACK_SWANS.length>0){
+    BLACK_SWANS.forEach(b=>{
+      const yr = b.year;
+      if(yr<=maxY){
+        const data = new Array(maxY+1).fill(null);
+        data[yr] = baseLine ? null : null;
+      }
     });
   }
 
@@ -707,8 +805,13 @@ function update(){
   // 用 table 紧凑展示
   const tbl = document.createElement('div');
   tbl.style.cssText = 'grid-column:1/-1;overflow-x:auto;background:#fff;border:0.5px solid rgba(0,0,0,0.10);border-radius:10px';
-  let html = `<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:560px">
-    <thead><tr style="background:#F8F7F2">
+  let html = `<div style="display:flex;align-items:center;padding:10px 12px;background:#F8F7F2;border-bottom:0.5px solid rgba(0,0,0,0.08)">
+    <span style="font-size:12px;font-weight:600;color:#5F5E5A">📊 终值数据（点击行只显示该曲线，再点取消）</span>
+    <button id="csvBtn" style="margin-left:auto;padding:4px 12px;border:0.5px solid #185FA5;color:#185FA5;background:#fff;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">📥 导出 CSV</button>
+    <button id="resetHl" style="margin-left:6px;padding:4px 12px;border:0.5px solid #B4B2A9;color:#5F5E5A;background:#fff;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">↻ 显示全部</button>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:560px">
+    <thead><tr style="background:#FAFAF7">
       <th style="text-align:left;padding:10px 12px;font-weight:500;color:#5F5E5A;font-size:12px">曲线 / 年份（${isReal?'真实购买力':'名义金额'}）</th>`;
   ms.forEach(y=> html += `<th style="text-align:right;padding:10px 12px;font-weight:500;color:#5F5E5A;font-size:12px">${y} 年</th>`);
   if(enabled.length>1 && !SCENARIO_ON) html += `<th style="text-align:right;padding:10px 12px;font-weight:500;color:#5F5E5A;font-size:12px">vs 基准</th>`;
@@ -716,10 +819,10 @@ function update(){
   enabled.forEach((c,i)=>{
     const arr = calcArr(c);
     const isBase = i===0;
-    html += `<tr style="border-top:0.5px solid rgba(0,0,0,0.08)">`;
+    html += `<tr data-idx="${i}" class="metric-row" style="border-top:0.5px solid rgba(0,0,0,0.08);cursor:pointer;transition:background .12s">`;
     html += `<td style="padding:10px 12px;text-align:left">
       <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${c.color};margin-right:8px;vertical-align:middle"></span>
-      <span style="font-weight:${isBase?'600':'500'};color:${isBase?'#2C2C2A':'#2C2C2A'}">${c.label}</span>
+      <span style="font-weight:${isBase?'600':'500'};color:#2C2C2A">${c.label}</span>
       ${isBase?'<span style="font-size:11px;color:#888780;margin-left:6px">基准</span>':''}
       <span style="font-size:11px;color:#888780;margin-left:6px">${c.rate.toFixed(1)}%</span>
     </td>`;
@@ -738,6 +841,54 @@ function update(){
   html += `</tbody></table>`;
   tbl.innerHTML = html;
   wrap.appendChild(tbl);
+
+  // 表格行点击高亮
+  tbl.querySelectorAll('tr.metric-row').forEach(tr=>{
+    tr.onclick = ()=>{
+      const idx = +tr.dataset.idx;
+      window._highlightedCurve = (window._highlightedCurve===idx) ? null : idx;
+      tbl.querySelectorAll('tr.metric-row').forEach(r=>r.style.background = +r.dataset.idx===window._highlightedCurve?'#FFF8E5':'');
+      // 让 chart 中其他 dataset 变浅
+      if(chart){
+        chart.data.datasets.forEach(ds=>{
+          // 找到对应曲线 dataset：name 包含 enabled[idx].label
+          const targetLbl = enabled[idx]?enabled[idx].label:'';
+          const isMatch = window._highlightedCurve===null || ds.label.includes(targetLbl);
+          ds._origColor = ds._origColor || ds.borderColor;
+          ds.borderColor = isMatch ? ds._origColor : '#D8D6CE';
+          ds.borderWidth = isMatch ? 2.5 : 1.2;
+        });
+        chart.update('none');
+      }
+    };
+  });
+
+  $('csvBtn').onclick = ()=>{
+    const rows = [['曲线','年化%']];
+    for(let y=0;y<=maxY;y++) rows[0].push(`${y}年(${isReal?'真实':'名义'})`);
+    enabled.forEach(c=>{
+      const arr = calcArr(c);
+      const r = [c.label, c.rate.toFixed(2)];
+      for(let y=0;y<=maxY;y++) r.push(adjust(arr[y],y).toFixed(2));
+      rows.push(r);
+    });
+    const csv = '\uFEFF' + rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
+    const blob = new Blob([csv],{type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href=url; a.download=`compound_${Date.now()}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+  $('resetHl').onclick = ()=>{
+    window._highlightedCurve = null;
+    tbl.querySelectorAll('tr.metric-row').forEach(r=>r.style.background='');
+    if(chart){
+      chart.data.datasets.forEach(ds=>{
+        if(ds._origColor){ ds.borderColor=ds._origColor; ds.borderWidth=2.5; }
+      });
+      chart.update('none');
+    }
+  };
 
   // summary
   let s = '<b>通胀设定</b>：'+(inflRate*100).toFixed(1)+'%/年';
@@ -861,13 +1012,29 @@ $('scrD2').addEventListener('input',update);
 
 /* ======== 真实股价数据 ======== */
 let HIST_DATA = null;
-fetch('./kline_data.json').then(r=>r.json()).then(d=>{ HIST_DATA = d; }).catch(()=>{});
-const HIST_COLOR = {MOUTAI:'#A32D2D', TENCENT:'#185FA5', APPLE:'#5F5E5A', SPX:'#1D7A4F'};
-const HIST_LABEL = {MOUTAI:'🇨🇳 茅台真实', TENCENT:'🇭🇰 腾讯真实', APPLE:'🇺🇸 苹果真实', SPX:'🇺🇸 标普真实'};
-let HIST_ON = {MOUTAI:false, TENCENT:false, APPLE:false, SPX:false};
+fetch('./kline_data.json').then(r=>r.json()).then(d=>{ HIST_DATA = d; update(); }).catch(()=>{});
+const HIST_COLOR = {
+  MOUTAI:'#A32D2D', TENCENT:'#185FA5', APPLE:'#5F5E5A',
+  SPX:'#1D7A4F', NASDAQ:'#534AB7', QQQ:'#1D9E75',
+  CSI300:'#D85A30', HSI:'#854F0B',
+  GLD:'#C9A227', TLT:'#76B0E8'
+};
+const HIST_LABEL = {
+  MOUTAI:'🇨🇳 茅台', TENCENT:'🇭🇰 腾讯', APPLE:'🇺🇸 苹果',
+  SPX:'🇺🇸 标普500', NASDAQ:'🇺🇸 纳指综合', QQQ:'🇺🇸 QQQ',
+  CSI300:'🇨🇳 沪深300', HSI:'🇭🇰 恒生',
+  GLD:'🥇 黄金GLD', TLT:'📜 美20Y国债'
+};
+// 是否为价格指数（需要股息修正）
+const HIST_IS_PR = {SPX:true, NASDAQ:true, CSI300:true, HSI:true};
+// 历史股息率（年化，用于 PR→TR 近似修正）
+const HIST_DIV = {SPX:0.018, NASDAQ:0.008, CSI300:0.022, HSI:0.035};
+
+let HIST_ON = {};
+Object.keys(HIST_LABEL).forEach(k=>HIST_ON[k]=false);
+let DIVIDEND_ON = true;
 document.querySelectorAll('.hist-on').forEach(el=>el.onchange=e=>{
   HIST_ON[e.target.dataset.sym] = e.target.checked;
-  // 第一次勾选时如果年限>10，提醒并自动调到 10 年
   const anyOn = Object.values(HIST_ON).some(v=>v);
   if(anyOn && +$('maxYear').value > 10){
     $('maxYear').value = '10';
@@ -876,13 +1043,13 @@ document.querySelectorAll('.hist-on').forEach(el=>el.onchange=e=>{
 });
 $('histQuickBtn').onclick = ()=>{
   $('maxYear').value = '10';
-  // 默认勾选标普500（最稳）
   if(!Object.values(HIST_ON).some(v=>v)){
     HIST_ON.SPX = true;
     document.querySelector('.hist-on[data-sym="SPX"]').checked = true;
   }
   update();
 };
+$('dividendOn').addEventListener('change', e=>{ DIVIDEND_ON = e.target.checked; update(); });
 /* ======== 模式 / 刻度切换 ======== */
 const EXPLAIN = {
   linear:'<b>① 指数样子 · 线性 Y 轴</b><br>Y 轴每格代表"<b>等量金钱</b>"。复利的本质是每年按百分比增长，曲线<b>越往后越陡</b>，前 20 年贴地，第 30-50 年突然起飞——经典的<b>曲棍球棒</b>。<br>👉 用这个视图：<b>给孩子和家人</b>看，让他们感受时间的爆发力。',
