@@ -160,7 +160,55 @@ tr:hover td{background:#FAFAF7}
 </section>
 
 <section class="card">
-<h2>二、Δr × 时间矩阵</h2>
+<h2>二、家庭资产组合模拟器 🏠</h2>
+<p class="desc">拖几个滑块，做出"30% 沪深 + 30% 标普 + 20% 中债 + 10% 黄金 + 10% 现金"这样的组合，自动算混合年化曲线 + 真实购买力。给爱人和孩子讲资产配置的最直观工具。</p>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+<button class="preset-btn" data-preset="conservative">🛡️ 保守型（退休/老人）</button>
+<button class="preset-btn" data-preset="balanced">⚖️ 平衡型（中年家庭）</button>
+<button class="preset-btn" data-preset="aggressive">🚀 进攻型（30岁前）</button>
+<button class="preset-btn" data-preset="muxi">⭐ 牧西推荐起步配置</button>
+<button class="preset-btn" data-preset="reset">🔄 清零</button>
+</div>
+
+<div id="portfolioGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:14px"></div>
+
+<div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:14px;background:#F8F7F2;border-radius:10px;margin-bottom:14px">
+<div>
+<div style="font-size:11px;color:#5F5E5A">总仓位</div>
+<div id="totalWeight" style="font-size:22px;font-weight:600">0%</div>
+</div>
+<div>
+<div style="font-size:11px;color:#5F5E5A">组合预期年化（加权）</div>
+<div id="portfolioRate" style="font-size:22px;font-weight:600;color:#A32D2D">0.0%</div>
+</div>
+<div>
+<div style="font-size:11px;color:#5F5E5A">扣通胀后真实年化</div>
+<div id="portfolioRealRate" style="font-size:22px;font-weight:600;color:#1D7A4F">0.0%</div>
+</div>
+<div style="margin-left:auto">
+<button id="applyPortfolioBtn" style="padding:10px 18px;background:#185FA5;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500">📤 把组合应用到上方曲线 →</button>
+</div>
+</div>
+
+<div id="portfolioSummary" class="summary" style="background:#FFF8E5;color:#5F4A1A"></div>
+
+<style>
+.preset-btn{padding:8px 14px;border:1px solid #B4B2A9;border-radius:99px;background:#fff;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
+.preset-btn:hover{border-color:#185FA5;background:#E6F1FB}
+.alloc-card{padding:12px 14px;border:1px solid rgba(0,0,0,0.10);border-radius:10px;background:#fff}
+.alloc-card .row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.alloc-card .name{font-weight:500;font-size:13px;flex:1}
+.alloc-card .pct{font-weight:600;font-size:14px;color:#A32D2D;min-width:50px;text-align:right}
+.alloc-card .ann{font-size:11px;color:#888780}
+.alloc-card .slide-row{display:flex;align-items:center;gap:8px}
+.alloc-card input[type=range]{flex:1;accent-color:#185FA5}
+.alloc-card input[type=number]{width:60px;padding:4px 6px;border:0.5px solid #B4B2A9;border-radius:6px;font-size:13px;text-align:right}
+</style>
+</section>
+
+<section class="card">
+<h2>三、Δr × 时间矩阵</h2>
 <p class="desc">基准 8%，每提高一点收益率，N 年后多多少倍？</p>
 <div style="overflow-x:auto">
 <table id="dtable">
@@ -172,7 +220,7 @@ tr:hover td{background:#FAFAF7}
 </section>
 
 <section class="card">
-<h2>三、家庭话术：怎么讲给孩子和爱人</h2>
+<h2>四、家庭话术：怎么讲给孩子和爱人</h2>
 <div class="story">
 <div class="it"><div class="h">折纸类比（讲给孩子）</div><div class="p">"一张纸对折 1 次是 2 层。对折 30 次会比珠穆朗玛峰还高。复利就是每天给自己折一次纸。"</div></div>
 <div class="it"><div class="h">雪球类比（讲给爱人）</div><div class="p">"100 元雪球，每年长大 10%，30 年后是 1745 元。但 12% 的雪球，30 年后是 2996 元——多 71%。这 2% 看起来不重要，时间替我们记账。"</div></div>
@@ -181,7 +229,7 @@ tr:hover td{background:#FAFAF7}
 </section>
 
 <section class="card">
-<h2>四、温馨提醒</h2>
+<h2>五、温馨提醒</h2>
 <p class="note">长期 ROE/年化只是"复利速度"的近似上限——实际股东回报还要看：① 估值买卖点；② 股利再投；③ 公司是否长期保留护城河。<br>
 苹果 ROE 171% 因大量回购致净资产极低，正常化后约 30-35%。比特币 60% 是 15 年回望，绝不可外推 70 年。债券 3-4% 是当前低利率环境，2000 年代曾达 4-5%。<br>
 通胀基准用的是<b>历史 CPI 长期均值</b>，未来路径未必复制。本工具仅作教育用途，不构成投资建议。</p>
@@ -563,7 +611,122 @@ $('inflCustom').addEventListener('input',update);
 ['p','add','maxYear'].forEach(id=>$(id).addEventListener('input',update));
 $('maxYear').addEventListener('change',update);
 
-/* ======== Δr × 时间矩阵 ======== */
+/* ======== 家庭资产组合模拟器 ======== */
+const ASSETS = [
+  {key:'csi300',  name:'🇨🇳 沪深300',          rate:8,  color:'#A32D2D'},
+  {key:'csi500',  name:'🇨🇳 中证500',          rate:9,  color:'#D85A30'},
+  {key:'spx',     name:'🇺🇸 标普500',          rate:10, color:'#185FA5'},
+  {key:'qqq',     name:'🇺🇸 纳斯达克100 (QQQ)', rate:13, color:'#1D9E75'},
+  {key:'hsi',     name:'🇭🇰 恒生指数',          rate:8,  color:'#5F4A8B'},
+  {key:'msci',    name:'🌍 MSCI 全球',          rate:9,  color:'#E8A33C'},
+  {key:'india',   name:'🇮🇳 印度 NIFTY50',      rate:13, color:'#9B5BC8'},
+  {key:'cgb',     name:'🇨🇳 中国国债指数',       rate:4,  color:'#1D7A4F'},
+  {key:'tlt',     name:'🇺🇸 美国长期国债 (TLT)', rate:4,  color:'#76B0E8'},
+  {key:'gold',    name:'🥇 黄金（人民币）',      rate:8,  color:'#C9A227'},
+  {key:'reit',    name:'🏘️ 美国 REITs (VNQ)',  rate:9,  color:'#854F0B'},
+  {key:'btc',     name:'₿ 比特币',              rate:60, color:'#F7931A'},
+  {key:'cash',    name:'💰 人民币定存',         rate:2,  color:'#888780'}
+];
+const PORTFOLIO = {};   // key -> weight%
+ASSETS.forEach(a=> PORTFOLIO[a.key]=0);
+
+const PRESETS = {
+  conservative:{cgb:30, tlt:20, gold:15, csi300:10, spx:10, cash:15},
+  balanced:    {csi300:20, spx:25, msci:10, cgb:15, gold:10, reit:5, qqq:10, cash:5},
+  aggressive:  {spx:25, qqq:20, csi300:10, india:10, msci:10, hsi:5, gold:10, btc:5, cgb:5},
+  muxi:        {spx:25, qqq:15, csi300:15, hsi:10, msci:5, cgb:15, gold:10, cash:5},
+  reset:       {}
+};
+
+function buildPortfolioUI(){
+  const grid = $('portfolioGrid');
+  grid.innerHTML = '';
+  ASSETS.forEach(a=>{
+    const w = PORTFOLIO[a.key] || 0;
+    const card = document.createElement('div');
+    card.className='alloc-card';
+    card.style.borderColor = w>0 ? a.color : 'rgba(0,0,0,0.10)';
+    card.innerHTML = `
+      <div class="row">
+        <div class="name" style="color:${w>0?a.color:'#2C2C2A'}">${a.name}</div>
+        <div class="pct" style="color:${a.color}">${w}%</div>
+      </div>
+      <div class="ann">预期年化 ${a.rate}%</div>
+      <div class="slide-row">
+        <input type="range" data-key="${a.key}" min="0" max="100" step="1" value="${w}">
+        <input type="number" data-key="${a.key}" min="0" max="100" step="1" value="${w}">
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  grid.querySelectorAll('input[type=range]').forEach(el=>el.oninput=e=>{
+    PORTFOLIO[e.target.dataset.key] = +e.target.value;
+    buildPortfolioUI(); updatePortfolio();
+  });
+  grid.querySelectorAll('input[type=number]').forEach(el=>el.oninput=e=>{
+    let v = Math.max(0, Math.min(100, +e.target.value || 0));
+    PORTFOLIO[e.target.dataset.key] = v;
+    buildPortfolioUI(); updatePortfolio();
+  });
+}
+
+function updatePortfolio(){
+  const total = Object.values(PORTFOLIO).reduce((a,b)=>a+b, 0);
+  const weighted = ASSETS.reduce((acc,a)=> acc + (PORTFOLIO[a.key]||0)/100 * a.rate/100, 0);
+  const inflRate = getInflRate();
+  const realRate = (1+weighted)/(1+inflRate) - 1;
+
+  $('totalWeight').textContent = total + '%';
+  $('totalWeight').style.color = total===100 ? '#1D7A4F' : (total>100 ? '#A32D2D' : '#5F5E5A');
+  $('portfolioRate').textContent = (weighted*100).toFixed(2) + '%';
+  $('portfolioRealRate').textContent = (realRate*100).toFixed(2) + '%';
+
+  // breakdown
+  const lines = [];
+  ASSETS.forEach(a=>{
+    const w = PORTFOLIO[a.key];
+    if(w>0) lines.push(`${a.name} ${w}%×${a.rate}% = ${(w/100*a.rate).toFixed(2)}%`);
+  });
+  let html = '<b>当前组合</b>：' + (lines.length?lines.join('  ｜  '):'尚未配置');
+  if(total!==100 && total>0) html += `<br>⚠️ 总仓位 <b>${total}%</b>，建议 = 100%（多余的部分等同未投资）`;
+  if(total===100) html += `<br>✅ 总仓 100%。组合年化 <b>${(weighted*100).toFixed(2)}%</b>，扣 ${(inflRate*100).toFixed(1)}% 通胀后实际购买力增速 <b>${(realRate*100).toFixed(2)}%/年</b>`;
+  if(lines.length>0){
+    const fv30 = 100*Math.pow(1+weighted,30);
+    const fvReal30 = fv30/Math.pow(1+inflRate,30);
+    html += `<br>💰 模拟 ¥10万 起步、30 年后名义 <b>${fmt(100000*Math.pow(1+weighted,30))}</b>，扣通胀真实购买力 <b>${fmt(100000*Math.pow(1+weighted,30)/Math.pow(1+inflRate,30))}</b>`;
+  }
+  $('portfolioSummary').innerHTML = html;
+}
+
+document.querySelectorAll('.preset-btn').forEach(b=>b.onclick=()=>{
+  const p = PRESETS[b.dataset.preset];
+  ASSETS.forEach(a=> PORTFOLIO[a.key]=0);
+  if(p) Object.keys(p).forEach(k=> PORTFOLIO[k]=p[k]);
+  buildPortfolioUI(); updatePortfolio();
+});
+
+$('applyPortfolioBtn').onclick = ()=>{
+  const total = Object.values(PORTFOLIO).reduce((a,b)=>a+b, 0);
+  if(total<=0){ alert('先配置组合再应用'); return; }
+  const weighted = ASSETS.reduce((acc,a)=> acc + (PORTFOLIO[a.key]||0)/100 * a.rate/100, 0) * 100;
+  // 把组合写到第一条还在启用的"对比"曲线上（id 1/2/3），不动 id 0 基准
+  let target = CURVES.slice(1).find(c=>c.enabled) || CURVES[1];
+  target.enabled = true;
+  target.rate = +weighted.toFixed(2);
+  target.label = '🏠 我的组合';
+  buildCurvesUI(); update();
+  window.scrollTo({top:0, behavior:'smooth'});
+};
+
+buildPortfolioUI();
+updatePortfolio();
+
+/* 让通胀变化也刷新组合面板 */
+const _origInflChange = $('inflPreset').onchange;
+$('inflPreset').addEventListener('change', updatePortfolio);
+$('inflCustom').addEventListener('input', updatePortfolio);
+
+
 const TBASE = 0.08;
 const DRS = [0.001,0.005,0.01,0.02,0.03,0.05,0.10,0.15,0.20];
 const YEARS_M = [5,10,20,30,50,70];
