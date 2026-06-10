@@ -1238,17 +1238,7 @@ function update(){
     datasets.push({label:`MC P10 (底部 10%)`,data:p10,borderColor:'rgba(163,45,45,0.35)',borderWidth:1,pointRadius:0,tension:0.1});
   }
 
-  // === 黑天鹅时间轴 ===
-  // 在主图上以 Chart.js annotation 风格的额外 dataset 实现：用透明竖线
-  if(BLACK_SWANS.length>0){
-    BLACK_SWANS.forEach(b=>{
-      const yr = b.year;
-      if(yr<=maxY){
-        const data = new Array(maxY+1).fill(null);
-        data[yr] = baseLine ? null : null;
-      }
-    });
-  }
+  // 黑天鹅时间轴现在通过 milestonePlugin.beforeDraw 直接画在 X 轴，不需要 dataset
 
   chart.data.datasets = datasets;
   chart.update('none');
