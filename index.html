@@ -99,7 +99,7 @@ tr:hover td{background:#FAFAF7}
 </div>
 </div>
 
-<div class="controls" style="margin-bottom:6px">
+<div class="controls" style="margin-bottom:14px">
 <div class="ctrl" style="max-width:160px">
 <label>最大年限</label>
 <select id="maxYear">
@@ -110,18 +110,29 @@ tr:hover td{background:#FAFAF7}
 <option value="70">70 年</option>
 </select>
 </div>
-<div class="ctrl" style="max-width:200px">
-<label>Y 轴刻度</label>
-<select id="yScale">
-<option value="linear" selected>线性（看曲棍球棒）</option>
-<option value="logarithmic">对数（看年化斜率）</option>
-</select>
+</div>
+
+<div style="margin-bottom:8px">
+<div style="font-size:12px;color:#5F5E5A;margin-bottom:8px">📊 切换 Y 轴视角，理解同一组数据的两种表达：</div>
+<div class="scale-tabs" style="display:flex;gap:10px;flex-wrap:wrap">
+<button class="stab active" data-scale="linear">
+<div style="font-weight:600;font-size:14px">① 指数样子（线性 Y 轴）</div>
+<div style="font-size:11px;color:#888780;margin-top:2px">看"曲棍球棒"爆炸式视觉冲击</div>
+</button>
+<button class="stab" data-scale="logarithmic">
+<div style="font-weight:600;font-size:14px">② 对数样子（对数 Y 轴）</div>
+<div style="font-size:11px;color:#888780;margin-top:2px">看年化"基因"差异（直线斜率）</div>
+</button>
 </div>
 </div>
 
-<div class="note" style="margin-top:-4px;margin-bottom:14px;padding:10px 14px;background:#FFF8E5;border-left:3px solid #E8A33C;border-radius:6px;color:#5F4A1A">
-💡 <b>怎么读图</b>：<b>线性刻度</b>下，指数增长是经典的"曲棍球棒"——前期看似平，越到后面越陡，这是复利最直观的视觉冲击。<b>对数刻度</b>下，指数增长会变成一条直线，斜率就是年化收益率（直线越陡 = 年化越高），适合比较两条曲线的"基因"差异。
-</div>
+<div id="scaleExplain" class="note" style="margin:0 0 14px;padding:12px 16px;background:#FFF8E5;border-left:3px solid #E8A33C;border-radius:6px;color:#5F4A1A;line-height:1.7"></div>
+
+<style>
+.stab{flex:1;min-width:240px;text-align:left;padding:12px 16px;border:1.5px solid #B4B2A9;border-radius:10px;background:#fff;cursor:pointer;transition:all .15s}
+.stab:hover{border-color:#185FA5}
+.stab.active{border-color:#185FA5;background:#E6F1FB;box-shadow:0 1px 4px rgba(24,95,165,0.15)}
+</style>
 
 <div style="margin-bottom:14px">
 <div class="note" style="margin-bottom:8px;color:#5F5E5A">点一家公司，把对比年化 r₂ 设成它的长期 ROE 中枢（数据来源：最新年报/公开披露）：</div>
@@ -340,13 +351,29 @@ function update(){
   $('summary').innerHTML = html;
 }
 
-['p','add','r1','r2','maxYear','yScale'].forEach(id=>$(id).addEventListener('input',update));
+['p','add','r1','r2','maxYear'].forEach(id=>$(id).addEventListener('input',update));
 $('maxYear').addEventListener('change',update);
-$('yScale').addEventListener('change',()=>{
-  window._yScale = $('yScale').value;
-  buildChart(+$('maxYear').value);
-  update();
+
+const EXPLAIN = {
+  linear: '<b>① 指数样子 · 线性 Y 轴</b><br>'+
+    'Y 轴每格代表"等量金钱"（比如每格 ¥10 万）。在这种刻度下，复利的本质——<b>每年按百分比增长</b>——会让曲线<b>越往后越陡</b>，前 20 年几乎贴地，第 30-50 年突然"起飞"。这就是经典的<b>曲棍球棒</b>形态，也是巴菲特"雪球越滚越大"那个隐喻的视觉来源。<br>👉 用这个视图：<b>给孩子和家人</b>看，让他们感受时间的爆发力。',
+  logarithmic: '<b>② 对数样子 · 对数 Y 轴</b><br>'+
+    'Y 轴每格代表"等比金钱"（¥1万 → ¥10万 → ¥100万 → ¥1000万 每格都是 10 倍）。<b>同样一笔钱，从 1万 涨到 10万 和从 100万 涨到 1000万，在对数图里高度一样</b>——因为它们都是"涨了 10 倍"。<br><br>👉 <b>"为什么不爆炸了？"</b> 不是数字变小了，是<b>尺子换了</b>。原本你看的是"高度"，现在看的是"倍数"。指数增长在数学上就是<b>每年涨同一个百分比</b>，所以它在对数轴上必然是一条<b>斜率恒定的直线</b>——直线越陡 = 年化越高。这就是为什么物理学画地震烈度、金融画长期股价、生物学画细胞分裂，<b>跨数量级时全部用对数图</b>。<br><br>👉 用这个视图：<b>给自己看</b>，比较两条曲线的"DNA"——谁的基因更优秀，一眼看清。'
+};
+
+let curScale = 'linear';
+document.querySelectorAll('.stab').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.stab').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    curScale = b.dataset.scale;
+    window._yScale = curScale;
+    $('scaleExplain').innerHTML = EXPLAIN[curScale];
+    buildChart(+$('maxYear').value);
+    update();
+  });
 });
+$('scaleExplain').innerHTML = EXPLAIN.linear;
 
 // company buttons
 const cwrap = $('companies');
