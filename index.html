@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>复利的秘密 · 一个 0.1% 在 30 年里的故事</title>
+<meta name="description" content="可交互复利模拟器：用真实公司 ROE 体会时间的魔法。免费、可分享、可教孩子。">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-serif;color:#2C2C2A;background:#FAFAF7;line-height:1.6;font-size:14px}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+.hero{text-align:center;padding:32px 0 40px}
+.hero h1{font-size:32px;font-weight:500;letter-spacing:-0.5px;margin-bottom:12px}
+.hero .sub{color:#5F5E5A;font-size:15px;max-width:620px;margin:0 auto}
+.hero .tag{display:inline-block;background:#EEEDFE;color:#534AB7;font-size:12px;padding:4px 10px;border-radius:99px;margin-bottom:16px}
+.card{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:24px;margin-bottom:20px}
+.card h2{font-size:18px;font-weight:500;margin-bottom:6px}
+.card .desc{color:#5F5E5A;font-size:13px;margin-bottom:18px}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px}
+.ctrl label{display:block;font-size:12px;color:#5F5E5A;margin-bottom:6px}
+.ctrl input[type=number],.ctrl select{width:100%;padding:8px 12px;border:0.5px solid #B4B2A9;border-radius:8px;font-size:14px;background:#fff}
+.ctrl input[type=range]{width:100%;accent-color:#185FA5}
+.val{color:#185FA5;font-weight:500;margin-left:6px}
+.val.r2{color:#A32D2D}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.m{background:#F1EFE8;border-radius:8px;padding:14px}
+.m .lbl{font-size:11px;color:#5F5E5A}
+.m .v{font-size:20px;font-weight:500;margin-top:4px}
+.m .yr{font-size:11px;color:#888780;margin-top:2px}
+.chart-box{position:relative;width:100%;height:360px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:#5F5E5A;margin-top:8px}
+.legend span{display:flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:2px}
+.summary{margin-top:14px;padding:14px;background:#E6F1FB;border-radius:8px;font-size:13px;color:#0C447C}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{padding:6px 14px;border:0.5px solid #B4B2A9;border-radius:99px;background:#fff;cursor:pointer;font-size:13px}
+.tab.active{background:#185FA5;color:#fff;border-color:#185FA5}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:right;padding:10px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+th:first-child,td:first-child{text-align:left}
+th{font-weight:500;color:#5F5E5A;background:#F8F7F2}
+tr:hover td{background:#FAFAF7}
+.pos{color:#A32D2D;font-weight:500}
+.companies{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:8px}
+.cbtn{text-align:left;padding:10px 12px;border:0.5px solid rgba(0,0,0,0.12);border-radius:8px;background:#fff;cursor:pointer;font-size:13px}
+.cbtn:hover{border-color:#185FA5}
+.cbtn .name{font-weight:500}
+.cbtn .roe{color:#A32D2D;font-size:12px;margin-top:2px}
+.note{font-size:12px;color:#888780;margin-top:8px;line-height:1.7}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#F1EFE8;padding:1px 6px;border-radius:4px;font-size:12px}
+.foot{text-align:center;color:#888780;font-size:12px;margin-top:40px;line-height:1.8}
+.btn{display:inline-block;padding:8px 16px;background:#fff;border:0.5px solid #B4B2A9;border-radius:8px;cursor:pointer;font-size:13px;color:#2C2C2A;text-decoration:none;margin-right:8px}
+.btn.primary{background:#185FA5;color:#fff;border-color:#185FA5}
+.story{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:8px}
+.story .it{background:#FAFAF7;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px}
+.story .it .h{font-weight:500;margin-bottom:6px}
+.story .it .p{color:#5F5E5A;font-size:13px}
+@media(max-width:640px){.hero h1{font-size:24px}.card{padding:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+<span class="tag">复利 · Compound Interest</span>
+<h1>0.1% 的差距，会被时间放大成一生的距离</h1>
+<p class="sub">滑动滑块，选一家你认识的公司，亲眼看时间怎么帮人印钱。<br>给自己看，也给爱人和孩子看。</p>
+</header>
+
+<section class="card">
+<h2>一、动手玩：复利模拟器</h2>
+<p class="desc">本金 + 两条年化收益曲线，调一调，看看 30 年差多少。</p>
+
+<div class="controls">
+<div class="ctrl">
+<label>本金 (¥)</label>
+<input id="p" type="number" value="100000" step="1000" min="0">
+</div>
+<div class="ctrl">
+<label>每年追加投入 (¥/年，可选)</label>
+<input id="add" type="number" value="0" step="1000" min="0">
+</div>
+<div class="ctrl">
+<label>基准年化 r₁ <span id="r1lbl" class="val">8.0%</span></label>
+<input id="r1" type="range" min="0" max="20" step="0.1" value="8">
+</div>
+<div class="ctrl">
+<label>对比年化 r₂ <span id="r2lbl" class="val r2">15.0%</span></label>
+<input id="r2" type="range" min="0" max="35" step="0.1" value="15">
+</div>
+</div>
+
+<div style="margin-bottom:14px">
+<div class="note" style="margin-bottom:8px;color:#5F5E5A">点一家公司，把对比年化 r₂ 设成它的长期 ROE 中枢：</div>
+<div id="companies" class="companies"></div>
+</div>
+
+<div class="metrics">
+<div class="m"><div class="lbl">5 年差距</div><div class="v" id="g5">—</div><div class="yr">r₂ 比 r₁ 多赚</div></div>
+<div class="m"><div class="lbl">10 年差距</div><div class="v" id="g10">—</div><div class="yr">r₂ 比 r₁ 多赚</div></div>
+<div class="m"><div class="lbl">20 年差距</div><div class="v" id="g20">—</div><div class="yr">r₂ 比 r₁ 多赚</div></div>
+<div class="m"><div class="lbl">30 年差距</div><div class="v" id="g30">—</div><div class="yr">r₂ 比 r₁ 多赚</div></div>
+</div>
+
+<div class="chart-box"><canvas id="chart" role="img" aria-label="复利曲线对比">复利曲线</canvas></div>
+<div class="legend">
+<span><span class="dot" style="background:#185FA5"></span>基准 r₁</span>
+<span><span class="dot" style="background:#A32D2D"></span>对比 r₂</span>
+<span><span class="dot" style="background:#888780"></span>差额</span>
+</div>
+<div id="summary" class="summary"></div>
+</section>
+
+<section class="card">
+<h2>二、一图看懂：Δr × 时间矩阵</h2>
+<p class="desc">基准 8%，每提高一点收益率，在 5/10/20/30 年后会"多"出多少倍？</p>
+<div style="overflow-x:auto">
+<table id="dtable">
+<thead><tr><th>每年多赚</th><th>5 年</th><th>10 年</th><th>20 年</th><th>30 年</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<p class="note">解释：表格里的百分比是"对比终值 ÷ 基准终值 − 1"。例如 +2% / 30 年 = 75%，意思是同样 1 万元，30 年后比基准多 75% 的钱。</p>
+</section>
+
+<section class="card">
+<h2>三、家庭话术：怎么讲给孩子和爱人</h2>
+<div class="story">
+<div class="it">
+<div class="h">折纸类比（讲给孩子）</div>
+<div class="p">"一张纸对折 1 次是 2 层。对折 30 次会比珠穆朗玛峰还高。复利就是每天给自己折一次纸。"</div>
+</div>
+<div class="it">
+<div class="h">雪球类比（讲给爱人）</div>
+<div class="p">"一颗 100 元的雪球，每年长大 10%，30 年后是 1745 元。但如果每年长大 12%，30 年后是 2996 元——多 71%。这 2% 看起来不重要，时间替我们记账。"</div>
+</div>
+<div class="it">
+<div class="h">果树类比（讲给自己）</div>
+<div class="p">"种树最好的时间是 20 年前，其次是现在。果树头三年没产出，第四年才开始结果。坚持过临界点，复利就接管了。"</div>
+</div>
+</div>
+</section>
+
+<section class="card">
+<h2>四、家庭行动清单</h2>
+<div class="story">
+<div class="it">
+<div class="h">给爱人的 3 件事</div>
+<div class="p">① 一起开一个长期账户（指数基金/优质蓝筹）<br>② 约定每月固定金额，不主动加减<br>③ 每年 12 月 31 日才看一次净值</div>
+</div>
+<div class="it">
+<div class="h">给孩子的 3 件事</div>
+<div class="p">① 给他/她一笔"30 年定存"，写下到期日<br>② 每年生日日复盘一次：本金、利息、新感想<br>③ 家庭"年化 ROE 大赛"：每人选一只股票，年终对账</div>
+</div>
+<div class="it">
+<div class="h">给自己的 3 件事</div>
+<div class="p">① 别追求 30%，先追求"30 年不亏"<br>② 写下三家你愿意持有 10 年的公司及其 ROE<br>③ 每月一次"不动手"练习——什么都不做也是策略</div>
+</div>
+</div>
+</section>
+
+<section class="card">
+<h2>五、温馨提醒</h2>
+<p class="note">长期 ROE 中枢只是"复利速度"的近似上限——实际股东回报还要看：① 估值买卖点；② 股利再投；③ 公司是否长期保留护城河。30% ROE 公司不等于你能拿到 30% 年化，但它代表了一个值得去理解的"复利源头"。<br>本工具仅作教育用途，不构成投资建议。数据为公开披露口径整理，可能与实时披露存在差异。</p>
+</section>
+
+<footer class="foot">
+<div>Made with ❤️ for 牧西的家人 · 复利的秘密 · 2026</div>
+<div style="margin-top:6px">把这个链接发给你想分享的人，让时间替他们工作。</div>
+</footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const COMPANIES = [
+  {code:'600519',name:'贵州茅台',roe:30,note:'近10年 ROE 中枢 ~30%'},
+  {code:'00700',name:'腾讯控股',roe:22,note:'2014-2024 ROE ~20-25%'},
+  {code:'BABA',name:'阿里巴巴',roe:12,note:'近5年 ROE 回落至 ~10-15%'},
+  {code:'BIDU',name:'字节(未上市)',roe:25,note:'估算，未公开披露'},
+  {code:'AAPL',name:'苹果',roe:35,note:'剔除回购影响后 ~30-40%'},
+  {code:'MSFT',name:'微软',roe:35,note:'近5年 ROE ~35-40%'},
+  {code:'GOOGL',name:'谷歌',roe:25,note:'近10年 ROE ~22-28%'},
+  {code:'META',name:'Meta',roe:28,note:'近5年 ROE ~25-30%'},
+  {code:'BRK.B',name:'伯克希尔',roe:11,note:'巴菲特 60 年 ~19.8% 年化'},
+  {code:'CSI300',name:'沪深300指数',roe:9,note:'长期 ROE+股利再投 ~8-10%'},
+  {code:'SPX',name:'标普500',roe:10,note:'1957-2024 含股利 ~10%'},
+  {code:'CASH',name:'银行定存',roe:2,note:'5年期 ~2-3%'}
+];
+
+const fmt = n => {
+  if(n>=1e8) return '¥'+(n/1e8).toFixed(2)+'亿';
+  if(n>=1e4) return '¥'+(n/1e4).toFixed(1)+'万';
+  return '¥'+Math.round(n).toLocaleString();
+};
+const pct = n => (n*100).toFixed(0)+'%';
+
+const $ = id => document.getElementById(id);
+const ctx = $('chart');
+const years = Array.from({length:31},(_,i)=>i);
+
+const chart = new Chart(ctx,{
+  type:'line',
+  data:{labels:years,datasets:[
+    {label:'r1',data:[],borderColor:'#185FA5',backgroundColor:'#185FA5',borderWidth:2.5,pointRadius:0,tension:0.1},
+    {label:'r2',data:[],borderColor:'#A32D2D',backgroundColor:'#A32D2D',borderWidth:2.5,pointRadius:0,tension:0.1},
+    {label:'gap',data:[],borderColor:'#888780',backgroundColor:'#888780',borderWidth:1.5,pointRadius:0,borderDash:[5,5],tension:0.1}
+  ]},
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>{
+        const m={r1:'基准',r2:'对比',gap:'差额'};
+        return (m[c.dataset.label]||c.dataset.label)+': '+fmt(c.parsed.y);
+      },title:c=>c[0].label+' 年'}}},
+    scales:{
+      y:{ticks:{callback:v=>fmt(v),font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}},
+      x:{title:{display:true,text:'年',font:{size:11}},ticks:{font:{size:11}},grid:{display:false}}
+    }
+  }
+});
+
+function fv(p,r,years,addPerYear){
+  const arr=[];
+  let v=p;
+  for(let y=0;y<=years;y++){
+    arr.push(v);
+    v = v*(1+r) + (addPerYear||0);
+  }
+  return arr;
+}
+
+function update(){
+  const p = +$('p').value || 0;
+  const add = +$('add').value || 0;
+  const r1 = +$('r1').value/100;
+  const r2 = +$('r2').value/100;
+  $('r1lbl').textContent = (r1*100).toFixed(1)+'%';
+  $('r2lbl').textContent = (r2*100).toFixed(1)+'%';
+
+  const a1 = fv(p,r1,30,add);
+  const a2 = fv(p,r2,30,add);
+  const ag = a2.map((v,i)=>v-a1[i]);
+
+  chart.data.datasets[0].data = a1;
+  chart.data.datasets[1].data = a2;
+  chart.data.datasets[2].data = ag;
+  chart.update('none');
+
+  const ratio = y => a1[y]>0 ? ((a2[y]/a1[y]-1)*100).toFixed(0)+'%' : '—';
+  $('g5').textContent = ratio(5);
+  $('g10').textContent = ratio(10);
+  $('g20').textContent = ratio(20);
+  $('g30').textContent = ratio(30);
+
+  $('summary').innerHTML =
+    '<b>20 年</b>：基准 '+fmt(a1[20])+' / 对比 '+fmt(a2[20])+'，相差 '+fmt(a2[20]-a1[20])+'。'+
+    '<br><b>30 年</b>：基准 '+fmt(a1[30])+' / 对比 '+fmt(a2[30])+'，相差 '+fmt(a2[30]-a1[30])+'。'+
+    '<br>每年看似只多 '+((r2-r1)*100).toFixed(1)+'%，30 年后却拉开 '+((a2[30]/a1[30]-1)*100).toFixed(0)+'% 的距离。';
+}
+
+['p','add','r1','r2'].forEach(id=>$(id).addEventListener('input',update));
+
+// company buttons
+const cwrap = $('companies');
+COMPANIES.forEach(c=>{
+  const b = document.createElement('button');
+  b.className='cbtn';
+  b.innerHTML = '<div class="name">'+c.name+' <span style="color:#888780;font-size:12px">'+c.code+'</span></div><div class="roe">长期 ROE / 年化 ~'+c.roe+'% · '+c.note+'</div>';
+  b.onclick = ()=>{
+    $('r2').value = c.roe;
+    update();
+    document.querySelectorAll('.cbtn').forEach(x=>x.style.borderColor='');
+    b.style.borderColor='#A32D2D';
+  };
+  cwrap.appendChild(b);
+});
+
+// dr matrix table
+const TBASE = 0.08;
+const DRS = [0.001,0.005,0.01,0.02,0.03,0.05,0.10];
+const tb = document.querySelector('#dtable tbody');
+DRS.forEach(d=>{
+  const r2 = TBASE+d;
+  const tr = document.createElement('tr');
+  const ratio = y => ((Math.pow(1+r2,y)/Math.pow(1+TBASE,y)-1)*100).toFixed(0)+'%';
+  tr.innerHTML = '<td>+'+(d*100).toFixed(1)+'%</td>'+
+    '<td class="pos">'+ratio(5)+'</td>'+
+    '<td class="pos">'+ratio(10)+'</td>'+
+    '<td class="pos">'+ratio(20)+'</td>'+
+    '<td class="pos">'+ratio(30)+'</td>';
+  tb.appendChild(tr);
+});
+
+update();
+</script>
+</body>
+</html>
