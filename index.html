@@ -20,7 +20,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-
 .ctrl label{display:block;font-size:12px;color:#5F5E5A;margin-bottom:6px}
 .ctrl input[type=number],.ctrl select,.ctrl input[type=text]{width:100%;padding:8px 12px;border:0.5px solid #B4B2A9;border-radius:8px;font-size:14px;background:#fff}
 .ctrl input[type=range]{width:100%;accent-color:#185FA5}
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px}
+.metrics{display:grid;grid-template-columns:1fr;gap:0;margin-bottom:14px}
 .m{background:#F1EFE8;border-radius:8px;padding:12px}
 .m .lbl{font-size:11px;color:#5F5E5A}
 .m .v{font-size:16px;font-weight:500;margin-top:3px}
@@ -673,23 +673,57 @@ function update(){
   chart.data.datasets = datasets;
   chart.update('none');
 
-  // metrics
+  // metrics —— 紧凑表格：所有启用曲线 × 关键年份
   const wrap = $('metricsWrap');
   wrap.innerHTML = '';
   const baseLine = enabled[0];
   if(!baseLine){ wrap.innerHTML = '<div class="m"><div class="lbl">至少启用一条曲线</div></div>'; $('summary').innerHTML=''; renderLegend(datasets); return; }
   const baseR = baseLine.rate/100;
   const baseArr = fv(p,baseR,maxY,add,BLACK_SWANS);
-  const ms = [10,20,30,50,70].filter(y=>y<=maxY);
-  ms.forEach(y=>{
-    const d = document.createElement('div');
-    d.className='m';
-    let html = `<div class="lbl">${y} 年（${curMode==='real'?'真实':'名义'}）</div>`;
-    html += `<div class="v" style="color:${baseLine.color}">${fmt(curMode==='real'?baseArr[y]/Math.pow(1+inflRate,y):baseArr[y])}</div>`;
-    html += `<div class="yr">基准 · ${baseLine.label}</div>`;
-    d.innerHTML = html;
-    wrap.appendChild(d);
+  const ms = [5,10,20,30,40,50,60,70].filter(y=>y<=maxY);
+
+  // 计算每条曲线在每个里程碑的值
+  const calcArr = c => c.delay&&c.delay>0
+    ? (function(){const arr=[];for(let y=0;y<=maxY;y++){if(y<c.delay)arr.push(p);else{const yr=y-c.delay;if(yr===0)arr.push(p);else arr.push(arr[arr.length-1]*(1+c.rate/100)+(add||0));}}return arr;})()
+    : fv(p,c.rate/100,maxY,add,BLACK_SWANS);
+
+  const isReal = curMode==='real';
+  const adjust = (v,y)=> isReal ? v/Math.pow(1+inflRate,y) : v;
+
+  // 用 table 紧凑展示
+  const tbl = document.createElement('div');
+  tbl.style.cssText = 'grid-column:1/-1;overflow-x:auto;background:#fff;border:0.5px solid rgba(0,0,0,0.10);border-radius:10px';
+  let html = `<table style="width:100%;border-collapse:collapse;font-size:13px;min-width:560px">
+    <thead><tr style="background:#F8F7F2">
+      <th style="text-align:left;padding:10px 12px;font-weight:500;color:#5F5E5A;font-size:12px">曲线 / 年份（${isReal?'真实购买力':'名义金额'}）</th>`;
+  ms.forEach(y=> html += `<th style="text-align:right;padding:10px 12px;font-weight:500;color:#5F5E5A;font-size:12px">${y} 年</th>`);
+  if(enabled.length>1 && !SCENARIO_ON) html += `<th style="text-align:right;padding:10px 12px;font-weight:500;color:#5F5E5A;font-size:12px">vs 基准</th>`;
+  html += `</tr></thead><tbody>`;
+  enabled.forEach((c,i)=>{
+    const arr = calcArr(c);
+    const isBase = i===0;
+    html += `<tr style="border-top:0.5px solid rgba(0,0,0,0.08)">`;
+    html += `<td style="padding:10px 12px;text-align:left">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${c.color};margin-right:8px;vertical-align:middle"></span>
+      <span style="font-weight:${isBase?'600':'500'};color:${isBase?'#2C2C2A':'#2C2C2A'}">${c.label}</span>
+      ${isBase?'<span style="font-size:11px;color:#888780;margin-left:6px">基准</span>':''}
+      <span style="font-size:11px;color:#888780;margin-left:6px">${c.rate.toFixed(1)}%</span>
+    </td>`;
+    ms.forEach(y=>{
+      const v = adjust(arr[y], y);
+      html += `<td style="padding:10px 12px;text-align:right;font-weight:500;color:${c.color};font-variant-numeric:tabular-nums">${fmt(v)}</td>`;
+    });
+    if(enabled.length>1 && !SCENARIO_ON){
+      const last = arr[maxY], base = baseArr[maxY];
+      const ratio = base>0 ? ((last/base-1)*100).toFixed(0)+'%' : '—';
+      const cls = isBase ? '#888780' : (last>=base?'#A32D2D':'#1D7A4F');
+      html += `<td style="padding:10px 12px;text-align:right;font-weight:600;color:${cls};font-variant-numeric:tabular-nums">${isBase?'—':(last>=base?'+':'')+ratio}</td>`;
+    }
+    html += `</tr>`;
   });
+  html += `</tbody></table>`;
+  tbl.innerHTML = html;
+  wrap.appendChild(tbl);
 
   // summary
   let s = '<b>通胀设定</b>：'+(inflRate*100).toFixed(1)+'%/年';
