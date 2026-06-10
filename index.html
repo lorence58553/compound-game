@@ -110,6 +110,17 @@ tr:hover td{background:#FAFAF7}
 <option value="70">70 年</option>
 </select>
 </div>
+<div class="ctrl" style="max-width:200px">
+<label>Y 轴刻度</label>
+<select id="yScale">
+<option value="linear" selected>线性（看曲棍球棒）</option>
+<option value="logarithmic">对数（看年化斜率）</option>
+</select>
+</div>
+</div>
+
+<div class="note" style="margin-top:-4px;margin-bottom:14px;padding:10px 14px;background:#FFF8E5;border-left:3px solid #E8A33C;border-radius:6px;color:#5F4A1A">
+💡 <b>怎么读图</b>：<b>线性刻度</b>下，指数增长是经典的"曲棍球棒"——前期看似平，越到后面越陡，这是复利最直观的视觉冲击。<b>对数刻度</b>下，指数增长会变成一条直线，斜率就是年化收益率（直线越陡 = 年化越高），适合比较两条曲线的"基因"差异。
 </div>
 
 <div style="margin-bottom:14px">
@@ -261,7 +272,7 @@ function buildChart(maxY){
         }
       },
       scales:{
-        y:{type:'logarithmic',ticks:{callback:v=>fmt(v),font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}},
+        y:{type:window._yScale||'linear',ticks:{callback:v=>fmt(v),font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}},
         x:{title:{display:true,text:'年',font:{size:11}},ticks:{font:{size:11},maxTicksLimit:15},grid:{display:false}}
       }
     }
@@ -302,11 +313,15 @@ function update(){
   const milestones = [5,10,20,30,40,50,60,70].filter(y=>y<=maxY);
   const wrap = $('metricsWrap');
   wrap.innerHTML = '';
+  const isHigher = r2 >= r1;
   milestones.forEach(y=>{
-    const ratio = a1[y]>0 ? ((a2[y]/a1[y]-1)*100).toFixed(0)+'%' : '—';
+    const ratioNum = a1[y]>0 ? (a2[y]/a1[y]-1)*100 : 0;
+    const ratio = a1[y]>0 ? (ratioNum>=0?'+':'')+ratioNum.toFixed(0)+'%' : '—';
+    const lblTxt = isHigher ? 'r₂ 比 r₁ 多赚' : 'r₂ 比 r₁ 少赚';
+    const color = isHigher ? '#A32D2D' : '#1D7A4F';
     const d = document.createElement('div');
     d.className='m';
-    d.innerHTML=`<div class="lbl">${y} 年差距</div><div class="v">${ratio}</div><div class="yr">r₂ 比 r₁ 多赚</div>`;
+    d.innerHTML=`<div class="lbl">${y} 年差距</div><div class="v" style="color:${color}">${ratio}</div><div class="yr">${lblTxt}</div>`;
     wrap.appendChild(d);
   });
 
@@ -325,8 +340,13 @@ function update(){
   $('summary').innerHTML = html;
 }
 
-['p','add','r1','r2','maxYear'].forEach(id=>$(id).addEventListener('input',update));
+['p','add','r1','r2','maxYear','yScale'].forEach(id=>$(id).addEventListener('input',update));
 $('maxYear').addEventListener('change',update);
+$('yScale').addEventListener('change',()=>{
+  window._yScale = $('yScale').value;
+  buildChart(+$('maxYear').value);
+  update();
+});
 
 // company buttons
 const cwrap = $('companies');
@@ -361,6 +381,7 @@ DRS.forEach(d=>{
 });
 
 // init
+window._yScale = 'linear';
 buildChart(50);
 update();
 </script>
