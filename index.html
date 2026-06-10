@@ -200,6 +200,10 @@ tr:hover td{background:#FAFAF7}
 <div class="sub-fold-body">
 <div style="font-size:13px;color:#5F5E5A;margin-bottom:10px">在某些"危机年"，指数会跌 20%-50%。复利曲线遇到黑天鹅是这样恢复的：</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+<button class="preset-btn" data-bs="1973">+ 1973 第一次石油危机 (-30%)</button>
+<button class="preset-btn" data-bs="1987">+ 1987 黑色星期一 (-23%)</button>
+<button class="preset-btn" data-bs="1997">+ 1997 亚洲金融危机 (-25%)</button>
+<button class="preset-btn" data-bs="2000">+ 2000 互联网泡沫 (-39%)</button>
 <button class="preset-btn" data-bs="2008">+ 2008 全球金融危机 (-37%)</button>
 <button class="preset-btn" data-bs="2015">+ 2015 A股股灾 (-30%)</button>
 <button class="preset-btn" data-bs="2020">+ 2020 新冠 (-15%)</button>
@@ -208,6 +212,36 @@ tr:hover td{background:#FAFAF7}
 <button class="preset-btn" data-bs="clear" style="background:#FFE5E5">🗑️ 清空</button>
 </div>
 <div id="bsList" style="display:flex;flex-direction:column;gap:6px"></div>
+</div>
+</details>
+
+<details class="sub-fold">
+<summary><span class="ftog">▼</span><span>📜 历史时间窗快速跳转（聚焦经典教学时段）</span></summary>
+<div class="sub-fold-body">
+<div class="note" style="background:#FFF8E5;border-left:3px solid #E8A33C;padding:10px 14px;border-radius:6px;margin-bottom:12px;color:#5F4A1A;line-height:1.7">
+点击任一时段：自动设置最大年限 + 自动勾选最相关的长史/实盘曲线。<br>仅对长史标的（标普 1990- / 黄金 1971- / CPI 1971-）有效，因为短窗实盘起点固定在 2015。
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+<button class="preset-btn" data-era="stagflation">🇺🇸 1971-1980 滞胀十年（黄金 +1657%）</button>
+<button class="preset-btn" data-era="dotcom">💻 1995-2002 互联网泡沫</button>
+<button class="preset-btn" data-era="gfc">🏦 2003-2012 GFC 崩溃与复苏</button>
+<button class="preset-btn" data-era="qe">📈 2009-2021 QE 大牛市</button>
+<button class="preset-btn" data-era="hike">📉 2020-2025 疫情→加息</button>
+<button class="preset-btn" data-era="halfcentury">⏳ 1971-2025 半世纪全景</button>
+</div>
+<div id="eraInfo" style="font-size:12px;color:#5F5E5A;line-height:1.6;padding:10px;background:#F8F7F2;border-radius:6px;display:none"></div>
+</div>
+</details>
+
+<details class="sub-fold">
+<summary><span class="ftog">▼</span><span>🪙 黄金 vs 通胀（"黄金真的抗通胀吗"）</span></summary>
+<div class="sub-fold-body">
+<label style="display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:10px"><input type="checkbox" class="hist-on" data-sym="CPI_US_LONG"> <span>📊 美国 CPI 累计曲线 (1971-2024) — 同样 ¥10万 在通胀下的"购买力等价线"</span></label>
+<div class="note" style="line-height:1.7">
+<b>怎么用</b>：勾选"黄金 1971-2024" + "美国 CPI" + 年限 70 年 → 同图比较两条曲线。<br>
+<b>结论</b>：1971-2024 黄金 +757%（含波动）／同期 CPI 累计 +728%（购买力损失 ~88%）。<b>黄金长期勉强跑赢通胀</b>，但 1980-2002 的 22 年里黄金跑输 CPI（即"中期黄金不抗通胀"）。<br>
+<b>给爱人的一句话</b>：黄金是"几十年保值"，不是"几年增值"——做组合的 5-15% 配置可以，重仓不行。
+</div>
 </div>
 </details>
 
@@ -1072,7 +1106,7 @@ function update(){
       if(!HIST_ON[sym] || !HIST_DATA[sym]) return;
       let rows = HIST_DATA[sym];
       // 长历史数据是年度，短历史是月度
-      const isAnnual = (sym==='SPX_LONG' || sym==='GOLD_LONG');
+      const isAnnual = (sym==='SPX_LONG' || sym==='GOLD_LONG' || sym==='CPI_US_LONG');
       const isPR = HIST_IS_PR[sym] && DIVIDEND_ON;
       const divRate = isPR ? HIST_DIV[sym] : 0;
       // 关键修复：长史 + 用户选了较短年限时，截取"最近 maxY 年"的尾段
@@ -1331,6 +1365,10 @@ function buildCompanies(){
 /* ======== 黑天鹅事件 ======== */
 let BLACK_SWANS = []; // [{year:5, dropPct:30, label:'2008'}]
 const BS_PRESETS = {
+  '1973':{dropPct:30, label:'1973 第一次石油危机'},
+  '1987':{dropPct:23, label:'1987 黑色星期一'},
+  '1997':{dropPct:25, label:'1997 亚洲金融危机'},
+  '2000':{dropPct:39, label:'2000 互联网泡沫'},
   '2008':{dropPct:37, label:'2008 全球金融危机'},
   '2015':{dropPct:30, label:'2015 A股股灾'},
   '2020':{dropPct:15, label:'2020 新冠'},
@@ -1372,7 +1410,38 @@ document.querySelectorAll('button[data-bs]').forEach(b=>b.onclick=()=>{
 });
 renderBs();
 
-/* ======== 情景对比 ======== */
+/* ======== 历史时段快速跳转 ======== */
+const ERA_PRESETS = {
+  stagflation:{maxY:10, syms:['GOLD_LONG'], note:'1971-1980 美元脱钩金本位 → 双位数通胀 → 黄金 +1657%。<b>把"最大年限"调到 10 年 + 仅勾"黄金长史"</b>，可看到这段史诗级避险行情。'},
+  dotcom:{maxY:10, syms:['SPX_LONG'], note:'1995-2002 互联网泡沫膨胀+破灭。<b>勾标普长史 + 10 年</b>，看 2000 年那个尖顶 + 之后 -49% 的痛苦。'},
+  gfc:{maxY:10, syms:['SPX_LONG','GOLD_LONG','CPI_US_LONG'], note:'2003-2012 含次贷+雷曼+QE1。标普 -57% 后 5 年才回本，但黄金期间 +260%。'},
+  qe:{maxY:15, syms:['SPX_LONG','GOLD_LONG'], note:'2009-2024 美联储大放水 + 标普慢牛 +700%。15 年视图，黄金跑输标普。'},
+  hike:{maxY:5, syms:['SPX_LONG','GOLD_LONG','CPI_US_LONG'], note:'2020-2025 疫情→QE→加息→AI。5 年 CPI 累计 +20%，标普 +90%。'},
+  halfcentury:{maxY:55, syms:['SPX_LONG','GOLD_LONG','CPI_US_LONG'], note:'1971-2025 完整 54 年：标普长史(1990-)、黄金长史(1971-)、CPI 累计(1971-) 三条线，复利的"全景图"。'}
+};
+document.querySelectorAll('button[data-era]').forEach(b=>b.onclick=()=>{
+  const k = b.dataset.era;
+  const p = ERA_PRESETS[k];
+  if(!p) return;
+  // 关闭所有实盘
+  Object.keys(HIST_ON).forEach(s=>{ HIST_ON[s]=false; });
+  document.querySelectorAll('.hist-on').forEach(el=>el.checked=false);
+  // 打开对应的
+  p.syms.forEach(s=>{
+    HIST_ON[s]=true;
+    const el = document.querySelector(`.hist-on[data-sym="${s}"]`);
+    if(el) el.checked = true;
+  });
+  // 设置年限
+  $('maxYear').value = String(p.maxY);
+  // 显示提示
+  $('eraInfo').style.display = '';
+  $('eraInfo').innerHTML = p.note;
+  buildChart(p.maxY);
+  update();
+});
+
+
 let SCENARIO_ON = false;
 $('scenarioOn').addEventListener('change', e=>{
   SCENARIO_ON = e.target.checked;
@@ -1390,14 +1459,16 @@ const HIST_COLOR = {
   SPX:'#1D7A4F', NASDAQ:'#534AB7', QQQ:'#1D9E75',
   CSI300:'#D85A30', HSI:'#854F0B',
   GLD:'#C9A227', TLT:'#76B0E8', IEF:'#4A8DC9', IEI:'#2E6FA8',
-  SPX_LONG:'#0F6E56', GOLD_LONG:'#B8860B'
+  SPX_LONG:'#0F6E56', GOLD_LONG:'#B8860B',
+  CPI_US_LONG:'#A32D2D'
 };
 const HIST_LABEL = {
   MOUTAI:'🇨🇳 茅台', TENCENT:'🇭🇰 腾讯', APPLE:'🇺🇸 苹果',
   SPX:'🇺🇸 标普500', NASDAQ:'🇺🇸 纳指综合', QQQ:'🇺🇸 QQQ',
   CSI300:'🇨🇳 沪深300', HSI:'🇭🇰 恒生',
   GLD:'🥇 黄金GLD', TLT:'📜 美20Y国债', IEF:'📜 美7-10Y(IEF)', IEI:'📜 美3-7Y(IEI)',
-  SPX_LONG:'🇺🇸 标普500长史(1990-)', GOLD_LONG:'🥇 黄金长史(1971-)'
+  SPX_LONG:'🇺🇸 标普500长史(1990-)', GOLD_LONG:'🥇 黄金长史(1971-)',
+  CPI_US_LONG:'📊 美CPI累计(1971-)'
 };
 const HIST_IS_PR = {SPX:true, NASDAQ:true, CSI300:true, HSI:true};
 const HIST_DIV = {SPX:0.018, NASDAQ:0.008, CSI300:0.022, HSI:0.035};
