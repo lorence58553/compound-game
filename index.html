@@ -379,7 +379,85 @@ tr:hover td{background:#FAFAF7}
 
 <section class="card section-fold">
 <details>
-<summary class="card-summary"><h2 style="display:inline">三、Δr × 时间矩阵 📐</h2><span class="ftog">▶</span></summary>
+<summary class="card-summary"><h2 style="display:inline">三、退休 IRR 反向求解 🎯</h2><span class="ftog">▶</span></summary>
+<div class="sub-fold-body" style="padding-top:0">
+<p class="desc">输入"几岁前要多少钱"，工具反算"每月需要存多少 + 年化多少"。一秒看清"我离财务自由还差多少"。</p>
+
+<div class="controls" style="margin-bottom:14px">
+<div class="ctrl">
+<label>当前年龄</label>
+<input id="rtAge" type="number" value="33" min="0" max="100" step="1">
+</div>
+<div class="ctrl">
+<label>目标年龄</label>
+<input id="rtTarget" type="number" value="60" min="20" max="100" step="1">
+</div>
+<div class="ctrl">
+<label>目标金额（¥）</label>
+<input id="rtGoal" type="number" value="10000000" min="0" step="100000">
+</div>
+<div class="ctrl">
+<label>当前已有本金（¥）</label>
+<input id="rtPrincipal" type="number" value="500000" min="0" step="10000">
+</div>
+<div class="ctrl">
+<label>是否扣通胀</label>
+<select id="rtInflate">
+<option value="real" selected>真实购买力（扣通胀）</option>
+<option value="nominal">名义金额（不扣）</option>
+</select>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:14px">
+
+<div style="padding:14px;background:#F1F8F1;border-left:3px solid #1D7A4F;border-radius:8px">
+<div style="font-size:12px;font-weight:600;color:#0F6E56;margin-bottom:6px">📌 模式 A · 固定年化，反算每月投入</div>
+<div style="margin-bottom:6px">假设年化 <input id="rtRateA" type="number" value="8" min="0" max="40" step="0.5" style="width:60px;padding:3px 6px;border:0.5px solid #B4B2A9;border-radius:4px"> %</div>
+<div style="font-size:11px;color:#5F5E5A">→ 每月需要投入：</div>
+<div id="rtMonthlyA" style="font-size:24px;font-weight:600;color:#1D7A4F;margin-top:4px;font-variant-numeric:tabular-nums">—</div>
+<div id="rtMonthlyExplain" style="font-size:11px;color:#888780;margin-top:4px"></div>
+</div>
+
+<div style="padding:14px;background:#FFF8E5;border-left:3px solid #E8A33C;border-radius:8px">
+<div style="font-size:12px;font-weight:600;color:#5F4A1A;margin-bottom:6px">📌 模式 B · 固定每月投入，反算需要的年化</div>
+<div style="margin-bottom:6px">每月投入 <input id="rtMonthlyB" type="number" value="10000" min="0" step="500" style="width:80px;padding:3px 6px;border:0.5px solid #B4B2A9;border-radius:4px"> 元</div>
+<div style="font-size:11px;color:#5F5E5A">→ 需要的年化收益率：</div>
+<div id="rtRateB" style="font-size:24px;font-weight:600;color:#A32D2D;margin-top:4px;font-variant-numeric:tabular-nums">—</div>
+<div id="rtRateBExplain" style="font-size:11px;color:#888780;margin-top:4px"></div>
+</div>
+
+<div style="padding:14px;background:#E6F1FB;border-left:3px solid #185FA5;border-radius:8px">
+<div style="font-size:12px;font-weight:600;color:#0C447C;margin-bottom:6px">📌 模式 C · 仅靠本金，几年达成？</div>
+<div style="margin-bottom:6px">假设年化 <input id="rtRateC" type="number" value="10" min="0" max="40" step="0.5" style="width:60px;padding:3px 6px;border:0.5px solid #B4B2A9;border-radius:4px"> %</div>
+<div style="font-size:11px;color:#5F5E5A">→ 需要的年数：</div>
+<div id="rtYearsC" style="font-size:24px;font-weight:600;color:#185FA5;margin-top:4px;font-variant-numeric:tabular-nums">—</div>
+<div id="rtYearsCExplain" style="font-size:11px;color:#888780;margin-top:4px"></div>
+</div>
+
+</div>
+
+<div id="rtSummary" class="summary" style="background:#F8F7F2;color:#2C2C2A"></div>
+
+<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+<button id="rtPreset1" class="preset-btn">🎯 我 60 岁要 1000 万</button>
+<button id="rtPreset2" class="preset-btn">🚀 我 50 岁要 2000 万（提前退休）</button>
+<button id="rtPreset3" class="preset-btn">👶 18 岁给孩子 200 万（教育金）</button>
+<button id="rtPreset4" class="preset-btn">🏠 5 年内 100 万（首付）</button>
+<button id="rtApplyToCurve" class="preset-btn" style="background:#185FA5;color:#fff;border-color:#185FA5">📤 把方案 A 应用到上方曲线</button>
+</div>
+
+<p class="note" style="margin-top:14px;line-height:1.7">
+<b>📖 计算口径</b>：模式 A/B 假设"每月底投入相同金额并按月复利"（PMT 模型），月利率 = (1+年化)^(1/12)-1；扣通胀模式下使用"真实年化"= (1+名义)/(1+通胀)-1。<br>
+<b>提醒</b>：长期通胀 ~2.5%（中国）/ 3%（美国）会让"目标金额"失真——10 年后的 100 万 ≈ 今天 78 万的购买力。建议默认使用"扣通胀"。
+</p>
+</div>
+</details>
+</section>
+
+<section class="card section-fold">
+<details>
+<summary class="card-summary"><h2 style="display:inline">四、Δr × 时间矩阵 📐</h2><span class="ftog">▶</span></summary>
 <div class="sub-fold-body" style="padding-top:0">
 <p class="desc">基准 8%，每提高一点收益率，N 年后多多少倍？</p>
 <div style="overflow-x:auto">
@@ -395,7 +473,7 @@ tr:hover td{background:#FAFAF7}
 
 <section class="card section-fold">
 <details>
-<summary class="card-summary"><h2 style="display:inline">四、家庭话术：怎么讲给孩子和爱人 💬</h2><span class="ftog">▶</span></summary>
+<summary class="card-summary"><h2 style="display:inline">五、家庭话术：怎么讲给孩子和爱人 💬</h2><span class="ftog">▶</span></summary>
 <div class="sub-fold-body" style="padding-top:0">
 <div class="story">
 <div class="it"><div class="h">折纸类比（讲给孩子）</div><div class="p">"一张纸对折 1 次是 2 层。对折 30 次会比珠穆朗玛峰还高。复利就是每天给自己折一次纸。"</div></div>
@@ -408,7 +486,7 @@ tr:hover td{background:#FAFAF7}
 
 <section class="card section-fold">
 <details>
-<summary class="card-summary"><h2 style="display:inline">五、温馨提醒 ⚠️</h2><span class="ftog">▶</span></summary>
+<summary class="card-summary"><h2 style="display:inline">六、温馨提醒 ⚠️</h2><span class="ftog">▶</span></summary>
 <div class="sub-fold-body" style="padding-top:0">
 <p class="note">长期 ROE/年化只是"复利速度"的近似上限——实际股东回报还要看：① 估值买卖点；② 股利再投；③ 公司是否长期保留护城河。<br>
 苹果 ROE 171% 因大量回购致净资产极低，正常化后约 30-35%。比特币 60% 是 15 年回望，绝不可外推 70 年。债券 3-4% 是当前低利率环境，2000 年代曾达 4-5%。<br>
@@ -1530,6 +1608,113 @@ updatePortfolio();
 const _origInflChange = $('inflPreset').onchange;
 $('inflPreset').addEventListener('change', updatePortfolio);
 $('inflCustom').addEventListener('input', updatePortfolio);
+
+
+/* ======== 退休 IRR 反向求解 ======== */
+function rtMonthlyToReach(P, FV, r_year, n_years){
+  // FV = P*(1+r)^n + PMT*(((1+r/12)^(12n)-1)/(r/12))
+  // 解 PMT
+  const r = r_year/100;
+  if(n_years<=0) return Infinity;
+  if(r===0) return (FV-P)/(n_years*12);
+  const fvP = P*Math.pow(1+r, n_years);
+  const m = r/12;
+  const factor = (Math.pow(1+m, 12*n_years)-1)/m;
+  return (FV - fvP)/factor;
+}
+function rtRateToReach(P, FV, PMT_month, n_years, tol=0.0001){
+  // 二分搜
+  if(n_years<=0) return null;
+  let lo=-0.5, hi=2.0;
+  function val(r){
+    const m=r/12;
+    let total = P*Math.pow(1+r, n_years);
+    if(Math.abs(m)<1e-9) total += PMT_month*12*n_years;
+    else total += PMT_month*((Math.pow(1+m, 12*n_years)-1)/m);
+    return total;
+  }
+  for(let i=0;i<100;i++){
+    const mid=(lo+hi)/2;
+    if(val(mid)>FV) hi=mid; else lo=mid;
+    if(hi-lo<tol) break;
+  }
+  return (lo+hi)/2;
+}
+function rtYearsToReach(P, FV, r_year){
+  // 仅本金，FV = P*(1+r)^n → n = ln(FV/P)/ln(1+r)
+  const r=r_year/100;
+  if(r<=0 || P<=0) return null;
+  if(P>=FV) return 0;
+  return Math.log(FV/P)/Math.log(1+r);
+}
+function rtUpdate(){
+  const age = +$('rtAge').value, target = +$('rtTarget').value;
+  const goal = +$('rtGoal').value, principal = +$('rtPrincipal').value;
+  const useReal = $('rtInflate').value==='real';
+  const inflRate = getInflRate();
+  const years = target - age;
+  if(years<=0){ $('rtSummary').innerHTML='⚠️ 目标年龄必须大于当前年龄'; return; }
+
+  // 真实模式：把名义年化转真实年化
+  function adjRate(rNom){
+    if(!useReal) return rNom;
+    return ((1+rNom/100)/(1+inflRate)-1)*100;
+  }
+
+  // A: 固定年化反算每月
+  const rA = +$('rtRateA').value;
+  const realRA = adjRate(rA);
+  const monthlyA = rtMonthlyToReach(principal, goal, realRA, years);
+  $('rtMonthlyA').textContent = monthlyA>=0 ? '¥'+Math.round(monthlyA).toLocaleString() : '¥0（已超目标）';
+  $('rtMonthlyExplain').innerHTML = monthlyA<0
+    ? '🎉 不用追加投入，本金按 '+rA+'% 年化在 '+years+' 年内已超目标'
+    : `按 ${rA}% 名义年化${useReal?'（≈真实 '+realRA.toFixed(2)+'%）':''}，每月底投入 <b>¥${Math.round(monthlyA).toLocaleString()}</b>，${years} 年后达成 ¥${(goal/10000).toFixed(0)}万`;
+
+  // B: 固定每月反算年化
+  const monthlyB = +$('rtMonthlyB').value;
+  const rateB = rtRateToReach(principal, goal, monthlyB, years);
+  if(rateB!==null){
+    const nominalB = useReal ? ((1+rateB)*(1+inflRate)-1)*100 : rateB*100;
+    $('rtRateB').textContent = nominalB.toFixed(2)+'%';
+    $('rtRateBExplain').innerHTML = `每月投 ¥${monthlyB.toLocaleString()}，${useReal?'要扣 '+(inflRate*100).toFixed(1)+'% 通胀，需名义年化':'需名义年化'} <b>${nominalB.toFixed(2)}%</b>${nominalB>20?' ⚠️ 难度极大':nominalB>15?' ⚠️ 需要长期高 ROE 资产':nominalB>10?' ✅ 类似 QQQ 长期':nominalB>7?' ✅ 类似标普长期':nominalB>4?' ✅ 类似平衡组合':' 🛡️ 类似纯债'}`;
+  }
+
+  // C: 仅本金
+  const rC = +$('rtRateC').value;
+  const realRC = adjRate(rC);
+  const yearsC = rtYearsToReach(principal, goal, realRC);
+  $('rtYearsC').textContent = yearsC===null ? '—' : (yearsC===0 ? '已达成' : yearsC.toFixed(1)+' 年');
+  $('rtYearsCExplain').innerHTML = yearsC===null ? '需要正收益率才能增长' : (yearsC===0 ? '🎉 当前本金已 ≥ 目标' : `仅靠 ¥${(principal/10000).toFixed(0)}万本金，按 ${rC}% 名义${useReal?'（≈真实 '+realRC.toFixed(2)+'%）':''}，${yearsC.toFixed(1)} 年后达 ¥${(goal/10000).toFixed(0)}万${yearsC>years?'（比目标晚 '+(yearsC-years).toFixed(1)+' 年）':'（提前 '+(years-yearsC).toFixed(1)+' 年）'}`);
+
+  // 总体 summary
+  let s = `<b>目标</b>：${age}→${target} 岁（${years} 年），${useReal?'真实购买力':'名义金额'} ¥${(goal/10000).toFixed(0)} 万。<b>当前本金</b>：¥${(principal/10000).toFixed(1)} 万。`;
+  if(useReal) s += `<br>📌 启用通胀扣减：${(inflRate*100).toFixed(1)}%/年。意味着 ${years} 年后 ¥${(goal/10000).toFixed(0)}万 的购买力 ≈ 今天 ¥${((goal/Math.pow(1+inflRate,years))/10000).toFixed(0)}万。`;
+  $('rtSummary').innerHTML = s;
+}
+
+['rtAge','rtTarget','rtGoal','rtPrincipal','rtInflate','rtRateA','rtMonthlyB','rtRateC'].forEach(id=>$(id).addEventListener('input',rtUpdate));
+$('rtPreset1').onclick = ()=>{ $('rtAge').value=33; $('rtTarget').value=60; $('rtGoal').value=10000000; rtUpdate(); };
+$('rtPreset2').onclick = ()=>{ $('rtAge').value=33; $('rtTarget').value=50; $('rtGoal').value=20000000; rtUpdate(); };
+$('rtPreset3').onclick = ()=>{ $('rtAge').value=0;  $('rtTarget').value=18; $('rtGoal').value=2000000;  $('rtPrincipal').value=100000; rtUpdate(); };
+$('rtPreset4').onclick = ()=>{ $('rtAge').value=33; $('rtTarget').value=38; $('rtGoal').value=1000000;  $('rtPrincipal').value=300000; rtUpdate(); };
+$('rtApplyToCurve').onclick = ()=>{
+  const rA = +$('rtRateA').value;
+  const monthlyA = +$('rtMonthlyA').textContent.replace(/[^\d-]/g,'')||0;
+  // 写到曲线 1
+  const target = CURVES.slice(1).find(c=>!c.enabled) || CURVES[1];
+  target.enabled = true;
+  target.rate = rA;
+  target.label = `🎯 退休方案A ${rA}%`;
+  // 写本金
+  $('p').value = +$('rtPrincipal').value;
+  $('add').value = monthlyA*12;
+  $('maxYear').value = String(Math.max(30, +$('rtTarget').value - +$('rtAge').value));
+  buildCurvesUI(); update();
+  window.scrollTo({top:0, behavior:'smooth'});
+};
+rtUpdate();
+$('inflPreset').addEventListener('change', rtUpdate);
+$('inflCustom').addEventListener('input', rtUpdate);
 
 
 const TBASE = 0.08;
