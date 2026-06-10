@@ -95,7 +95,7 @@ tr:hover td{background:#FAFAF7}
 </div>
 <div class="ctrl">
 <label>对比年化 r₂ <span id="r2lbl" class="val r2">15.0%</span></label>
-<input id="r2" type="range" min="0" max="45" step="0.1" value="15">
+<input id="r2" type="range" min="0" max="65" step="0.1" value="15">
 </div>
 </div>
 
@@ -260,10 +260,22 @@ const COMPANIES = [
   {cat:'eu',code:'MSCIWLD',name:'MSCI 全球 (ACWI)',roe:9,roeLatest:9,note:'全球股票，近20年含股息年化 ~8-9%',src:'MSCI',flag:'🌍'},
   {cat:'eu',code:'MSCIEM',name:'MSCI 新兴市场',roe:7,roeLatest:7,note:'新兴市场，含股息年化 ~6-8%',src:'MSCI',flag:'🌍'},
 
-  // === 现金/对照 ===
-  {cat:'cash',code:'GOLD',name:'黄金',roe:7,roeLatest:7,note:'1971 至今美元计价 ~7%（剧烈波动）',src:'LBMA',flag:'🥇'},
-  {cat:'cash',code:'TLT',name:'美国20年国债',roe:4,roeLatest:4,note:'长期 ~4%（含息）',src:'iShares',flag:'🇺🇸'},
-  {cat:'cash',code:'CASH',name:'银行定存',roe:2,roeLatest:2,note:'5年期 ~2%',src:'央行基准',flag:'💰'}
+  // === 现金/债券/避险/另类 ===
+  {cat:'cash',code:'GOLD',name:'黄金（美元计价）',roe:7,roeLatest:7,note:'1971 布雷顿森林解体至今美元计价 ~7%（剧烈波动）',src:'LBMA',flag:'🥇'},
+  {cat:'cash',code:'GOLDCNY',name:'黄金（人民币计价）',roe:8,roeLatest:8,note:'2002-2025 人民币金价年化 ~8-9%（叠加汇率）',src:'上金所',flag:'🥇'},
+  {cat:'cash',code:'TLT',name:'美国 20 年国债 (TLT)',roe:4,roeLatest:4,note:'iShares TLT，长期含票息回报 ~4%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'IEF',name:'美国 10 年国债 (IEF)',roe:4,roeLatest:4,note:'iShares IEF，长期含票息回报 ~3.5-4.5%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'SHY',name:'美国短债 (SHY 1-3Y)',roe:3,roeLatest:3,note:'iShares 1-3 年美债，长期 ~2.5-3.5%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'CN10Y',name:'中国 10 年国债',roe:3,roeLatest:2.7,note:'近 10 年到期收益率 2.5-3.5%，2025 年 ~2.7%',src:'中债登',flag:'🇨🇳'},
+  {cat:'cash',code:'CGB',name:'中国国债指数 (CSI)',roe:4,roeLatest:4,note:'中证全债指数 2002 至今含息年化 ~4%',src:'中证指数',flag:'🇨🇳'},
+  {cat:'cash',code:'CN30Y',name:'中国 30 年超长国债',roe:3.5,roeLatest:3.0,note:'近 5 年到期收益率 ~3-3.5%（含资本利得）',src:'中债登',flag:'🇨🇳'},
+  {cat:'cash',code:'HYG',name:'美国高收益债 (HYG)',roe:6,roeLatest:6,note:'iShares HYG，垃圾债，长期含息 ~5-7%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'TIPS',name:'美国通胀保护债 (TIP)',roe:3,roeLatest:3,note:'iShares TIP，扣除通胀后实际 ~1-2%，名义 ~3%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'BTC',name:'比特币 (BTC)',roe:60,roeLatest:60,note:'2010 至今年化 ~60%（极高波动，持有难度大）',src:'CoinMarketCap',flag:'₿'},
+  {cat:'cash',code:'OIL',name:'原油 (WTI)',roe:3,roeLatest:3,note:'1986 至今年化 ~3-4%（强周期，不适合长持）',src:'EIA',flag:'🛢️'},
+  {cat:'cash',code:'REIT',name:'美国 REITs (VNQ)',roe:9,roeLatest:9,note:'Vanguard VNQ 房地产 ETF，长期含息 ~8-10%',src:'Vanguard',flag:'🏘️'},
+  {cat:'cash',code:'CNY_DEP',name:'人民币 5 年定存',roe:2,roeLatest:2,note:'2025 年大行 5 年期 ~1.55-2%',src:'央行基准',flag:'💰'},
+  {cat:'cash',code:'CPI',name:'通胀（参考线）',roe:3,roeLatest:3,note:'中国 CPI 长期 ~2-3%，美国 ~3%（购买力底线）',src:'统计局',flag:'📊'}
 ];
 
 const CAT_LABELS = {
@@ -273,7 +285,7 @@ const CAT_LABELS = {
   us:'🇺🇸 美股指数 / ETF',
   apac:'🌏 亚太其他指数',
   eu:'🇪🇺 欧洲与全球指数',
-  cash:'💰 现金 / 避险类'
+  cash:'💰 债券 / 黄金 / 另类 / 现金'
 };
 
 const fmt = n => {
