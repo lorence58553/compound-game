@@ -248,10 +248,31 @@ tr:hover td{background:#FAFAF7}
 <details class="sub-fold">
 <summary><span class="ftog">▼</span><span>🔥 资产相关性热图（数学证明分散配置的价值）</span></summary>
 <div class="sub-fold-body">
-<div class="note" style="background:#F1F8F1;border-left:3px solid #1D7A4F;padding:10px 14px;border-radius:6px;margin-bottom:12px;color:#2C5538">
-基于过去 10 年月度收益率计算的相关系数。<b>越接近 +1（深红）= 同涨同跌，分散无效；越接近 0（白）= 不相关，分散有效；越接近 -1（深绿）= 反向对冲。</b>
+
+<div class="note" style="background:#FFF8E5;border-left:3px solid #E8A33C;padding:12px 16px;border-radius:6px;margin-bottom:12px;color:#5F4A1A;line-height:1.7">
+<b>📖 怎么看 / 怎么用（重要）</b><br>
+1️⃣ <b>每个色块</b> = 两个资产<b>过去 10 年月度收益率</b>的<b>皮尔逊相关系数</b>（-1 ~ +1）。<br>
+2️⃣ <b>用法 1：避免"假分散"</b>——同一行扫一眼，颜色都偏红的资产不要一起买，那是<b>同一个押注</b>（比如 标普/QQQ/纳指 三个全是 0.9+，买齐 = 重仓美股科技）。<br>
+3️⃣ <b>用法 2：选"对冲组合"</b>——找<b>跨色带</b>的资产配对：标普 (0.11) 黄金 / 标普 (0.15) TLT 长债——这种 ≈0 就够了，<b>不需要 -1 才叫对冲</b>。"低相关"已经是降低组合波动率的核武器。<br>
+4️⃣ <b>用法 3：识别"伪债券"</b>——TLT 与标普 0.15 弱相关，黄金与标普 0.11 弱相关——这就是为什么经典 60/40 股债组合能穿越牛熊。
 </div>
+
+<div class="note" style="background:#E6F1FB;border-left:3px solid #185FA5;padding:10px 14px;border-radius:6px;margin-bottom:12px;color:#0C447C;line-height:1.7">
+<b>⚠️ "为什么没有深绿（&lt;-0.4 反向对冲）？"</b><br>
+现实中长期保持负相关的资产<b>极其稀少</b>。常见的所谓"对冲"资产其实是：<br>
+• <b>VIX/SVXY</b>（波动率指数衍生品，与股票 ≈ -0.7，但不能长持）<br>
+• <b>放空 ETF</b>（SH 反向标普，与标普 ≈ -1，但有时间衰减）<br>
+• <b>美元指数 DXY</b>（与黄金 ≈ -0.6）<br>
+这三类都不在工具内。<b>对家庭长期投资者，"低相关 ~0" 已是最佳实战目标</b>，深绿那种工具不适合长期持有。
+</div>
+
 <div id="corrTable"></div>
+
+<div class="note" style="margin-top:12px;line-height:1.7">
+<b>📌 数据口径</b>：基于本工具 130 个月数据（2015-09 ~ 2026-06）的月收益率算皮尔逊相关。窗口短、含 2020 流动性危机+2022 加息双重应激事件，可能高估部分相关性。学术研究的 30+ 年长窗相关系数会更接近 0。<br>
+<b>📌 本质提醒</b>：相关系数测的是"日常一起涨跌"，<b>不测尾部风险</b>。2008 / 2020 真正的危机时刻，几乎所有风险资产相关性会瞬间跳到 +1（"同跌"），这就是为什么<b>真正的避险只有现金 + 国债 + 黄金</b>。
+</div>
+
 </div>
 </details>
 
