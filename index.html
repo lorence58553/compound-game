@@ -4,43 +4,38 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>复利的秘密 · 一个 0.1% 在 70 年里的故事</title>
-<meta name="description" content="可交互复利模拟器：用真实公司 ROE 体会时间的魔法。免费、可分享、可教孩子。">
+<meta name="description" content="可交互复利模拟器：用真实公司 ROE 与全球指数体会时间的魔法。免费、可分享、可教孩子。">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-serif;color:#2C2C2A;background:#FAFAF7;line-height:1.6;font-size:14px}
-.wrap{max-width:1120px;margin:0 auto;padding:32px 20px 80px}
-.hero{text-align:center;padding:32px 0 40px}
-.hero h1{font-size:32px;font-weight:500;letter-spacing:-0.5px;margin-bottom:12px}
-.hero .sub{color:#5F5E5A;font-size:15px;max-width:620px;margin:0 auto}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+.hero{text-align:center;padding:32px 0 36px}
+.hero h1{font-size:30px;font-weight:500;letter-spacing:-0.5px;margin-bottom:12px}
+.hero .sub{color:#5F5E5A;font-size:15px;max-width:640px;margin:0 auto}
 .hero .tag{display:inline-block;background:#EEEDFE;color:#534AB7;font-size:12px;padding:4px 10px;border-radius:99px;margin-bottom:16px}
 .card{background:#fff;border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:24px;margin-bottom:20px}
 .card h2{font-size:18px;font-weight:500;margin-bottom:6px}
 .card .desc{color:#5F5E5A;font-size:13px;margin-bottom:18px}
-.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:20px}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:14px}
 .ctrl label{display:block;font-size:12px;color:#5F5E5A;margin-bottom:6px}
-.ctrl input[type=number],.ctrl select{width:100%;padding:8px 12px;border:0.5px solid #B4B2A9;border-radius:8px;font-size:14px;background:#fff}
+.ctrl input[type=number],.ctrl select,.ctrl input[type=text]{width:100%;padding:8px 12px;border:0.5px solid #B4B2A9;border-radius:8px;font-size:14px;background:#fff}
 .ctrl input[type=range]{width:100%;accent-color:#185FA5}
-.val{color:#185FA5;font-weight:500;margin-left:6px}
-.val.r2{color:#A32D2D}
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px}
 .m{background:#F1EFE8;border-radius:8px;padding:12px}
 .m .lbl{font-size:11px;color:#5F5E5A}
-.m .v{font-size:18px;font-weight:500;margin-top:3px}
+.m .v{font-size:16px;font-weight:500;margin-top:3px}
 .m .yr{font-size:10px;color:#888780;margin-top:2px}
-.chart-box{position:relative;width:100%;height:400px}
+.chart-box{position:relative;width:100%;height:420px}
 .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:#5F5E5A;margin-top:8px}
 .legend span{display:flex;align-items:center;gap:6px}
 .dot{width:10px;height:10px;border-radius:2px}
 .summary{margin-top:14px;padding:14px;background:#E6F1FB;border-radius:8px;font-size:13px;color:#0C447C}
-.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.tab{padding:6px 14px;border:0.5px solid #B4B2A9;border-radius:99px;background:#fff;cursor:pointer;font-size:13px;transition:all .15s}
-.tab.active{background:#185FA5;color:#fff;border-color:#185FA5}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th,td{text-align:right;padding:8px 6px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
 th:first-child,td:first-child{text-align:left}
 th{font-weight:500;color:#5F5E5A;background:#F8F7F2;font-size:11px}
 tr:hover td{background:#FAFAF7}
-.pos{color:#A32D2D;font-weight:500}
+.pos{font-weight:500}
 .companies{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px}
 .cbtn{text-align:left;padding:10px 12px;border:0.5px solid rgba(0,0,0,0.12);border-radius:8px;background:#fff;cursor:pointer;font-size:13px;transition:all .15s}
 .cbtn:hover{border-color:#185FA5;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
@@ -49,22 +44,30 @@ tr:hover td{background:#FAFAF7}
 .cbtn .roe{color:#A32D2D;font-size:12px;margin-top:2px}
 .cbtn .src{color:#888780;font-size:11px;margin-top:1px}
 .note{font-size:12px;color:#888780;margin-top:8px;line-height:1.7}
-.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#F1EFE8;padding:1px 6px;border-radius:4px;font-size:12px}
 .foot{text-align:center;color:#888780;font-size:12px;margin-top:40px;line-height:1.8}
-.btn{display:inline-block;padding:8px 16px;background:#fff;border:0.5px solid #B4B2A9;border-radius:8px;cursor:pointer;font-size:13px;color:#2C2C2A;text-decoration:none;margin-right:8px}
-.btn.primary{background:#185FA5;color:#fff;border-color:#185FA5}
 .story{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:8px}
 .story .it{background:#FAFAF7;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px}
 .story .it .h{font-weight:500;margin-bottom:6px}
 .story .it .p{color:#5F5E5A;font-size:13px}
-.tooltip-custom{position:absolute;background:rgba(255,255,255,0.97);border:1px solid #B4B2A9;border-radius:8px;padding:12px;font-size:12px;pointer-events:none;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.1);min-width:200px}
-.tooltip-custom .tt-year{font-weight:600;font-size:14px;margin-bottom:6px}
-.tooltip-custom .tt-row{display:flex;justify-content:space-between;padding:2px 0}
-.tooltip-custom .tt-label{color:#5F5E5A}
-.tooltip-custom .tt-val{font-weight:500}
-.tooltip-custom .tt-gap{color:#A32D2D;font-weight:600;border-top:1px solid #eee;margin-top:4px;padding-top:4px}
-.data-date{font-size:11px;color:#888780;font-style:italic}
-@media(max-width:640px){.hero h1{font-size:24px}.card{padding:18px}.chart-box{height:300px}}
+.stab{flex:1;min-width:240px;text-align:left;padding:12px 16px;border:1.5px solid #B4B2A9;border-radius:10px;background:#fff;cursor:pointer;transition:all .15s;font-family:inherit}
+.stab:hover{border-color:#185FA5}
+.stab.active{border-color:#185FA5;background:#E6F1FB;box-shadow:0 1px 4px rgba(24,95,165,0.15)}
+.curves-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:14px}
+.curve-card{padding:12px 14px;border:1px solid rgba(0,0,0,0.10);border-radius:10px;background:#fff;position:relative;transition:all .15s}
+.curve-card.disabled{opacity:0.45;background:#FAFAF7}
+.curve-card .row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.curve-card input[type=checkbox]{accent-color:#185FA5}
+.curve-card input[type=text]{flex:1;border:none;background:transparent;font-weight:500;font-size:14px;padding:2px 0;border-bottom:1px solid transparent}
+.curve-card input[type=text]:focus{outline:none;border-bottom-color:#185FA5}
+.curve-card .rate-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.curve-card input[type=number]{width:70px;padding:4px 8px;border:0.5px solid #B4B2A9;border-radius:6px;font-size:13px;font-weight:500;text-align:right}
+.curve-card input[type=range]{flex:1;accent-color:currentColor}
+.curve-color-dot{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+.curve-card .quick{font-size:11px;color:#5F5E5A;margin-top:6px}
+.tabs-mode{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tab-mode{padding:8px 16px;border:1px solid #B4B2A9;border-radius:99px;background:#fff;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
+.tab-mode.active{background:#185FA5;color:#fff;border-color:#185FA5}
+@media(max-width:640px){.hero h1{font-size:24px}.card{padding:18px}.chart-box{height:340px}}
 </style>
 </head>
 <body>
@@ -73,12 +76,12 @@ tr:hover td{background:#FAFAF7}
 <header class="hero">
 <span class="tag">复利 · Compound Interest</span>
 <h1>0.1% 的差距，会被时间放大成一生的距离</h1>
-<p class="sub">滑动滑块，选一家你认识的公司，亲眼看时间怎么帮人印钱。<br>给自己看，也给爱人和孩子看。</p>
+<p class="sub">滑动滑块、自定义年化、对比 4 条曲线，再加上通胀基准——亲眼看时间和购买力的双重博弈。</p>
 </header>
 
 <section class="card">
-<h2>一、动手玩：复利模拟器</h2>
-<p class="desc">本金 + 两条年化收益曲线，调一调，看看 70 年差多少。</p>
+<h2>一、动手玩：复利模拟器（最多 4 条曲线 + 通胀基准）</h2>
+<p class="desc">本金 + 自由编辑年化 + 选国家通胀基准——切换"名义 / 真实购买力"看清差异。</p>
 
 <div class="controls">
 <div class="ctrl">
@@ -90,17 +93,6 @@ tr:hover td{background:#FAFAF7}
 <input id="add" type="number" value="0" step="1000" min="0">
 </div>
 <div class="ctrl">
-<label>基准年化 r₁ <span id="r1lbl" class="val">8.0%</span></label>
-<input id="r1" type="range" min="0" max="25" step="0.1" value="8">
-</div>
-<div class="ctrl">
-<label>对比年化 r₂ <span id="r2lbl" class="val r2">15.0%</span></label>
-<input id="r2" type="range" min="0" max="65" step="0.1" value="15">
-</div>
-</div>
-
-<div class="controls" style="margin-bottom:14px">
-<div class="ctrl" style="max-width:160px">
 <label>最大年限</label>
 <select id="maxYear">
 <option value="30">30 年</option>
@@ -110,11 +102,36 @@ tr:hover td{background:#FAFAF7}
 <option value="70">70 年</option>
 </select>
 </div>
+<div class="ctrl">
+<label>通胀基准（拉低真实购买力）</label>
+<select id="inflPreset">
+<option value="0">无（不调整）</option>
+<option value="2.5" selected>🇨🇳 中国 ~2.5%（近20年CPI均值）</option>
+<option value="3">🇺🇸 美国 ~3%（1913至今 CPI 均值）</option>
+<option value="2">🇪🇺 欧元区 ~2%（ECB 目标）</option>
+<option value="1">🇯🇵 日本 ~1%（长期低通胀）</option>
+<option value="2.5">🇰🇷 韩国 ~2.5%</option>
+<option value="6">🇮🇳 印度 ~6%（结构性高）</option>
+<option value="3">🇸🇬 新加坡 ~3%</option>
+<option value="2">🇭🇰 香港 ~2%</option>
+<option value="custom">自定义…</option>
+</select>
+</div>
+<div class="ctrl" id="inflCustomBox" style="display:none">
+<label>自定义通胀率 (%/年)</label>
+<input id="inflCustom" type="number" value="3" step="0.1" min="0" max="50">
+</div>
+</div>
+
+<div class="tabs-mode">
+<button class="tab-mode active" data-mode="nominal">📈 名义金额（账面数字）</button>
+<button class="tab-mode" data-mode="real">💵 真实购买力（扣通胀）</button>
+<button class="tab-mode" data-mode="both">⚖️ 双视图对比</button>
 </div>
 
 <div style="margin-bottom:8px">
 <div style="font-size:12px;color:#5F5E5A;margin-bottom:8px">📊 切换 Y 轴视角，理解同一组数据的两种表达：</div>
-<div class="scale-tabs" style="display:flex;gap:10px;flex-wrap:wrap">
+<div style="display:flex;gap:10px;flex-wrap:wrap">
 <button class="stab active" data-scale="linear">
 <div style="font-weight:600;font-size:14px">① 指数样子（线性 Y 轴）</div>
 <div style="font-size:11px;color:#888780;margin-top:2px">看"曲棍球棒"爆炸式视觉冲击</div>
@@ -126,81 +143,48 @@ tr:hover td{background:#FAFAF7}
 </div>
 </div>
 
-<div id="scaleExplain" class="note" style="margin:0 0 14px;padding:12px 16px;background:#FFF8E5;border-left:3px solid #E8A33C;border-radius:6px;color:#5F4A1A;line-height:1.7"></div>
+<div id="scaleExplain" class="note" style="margin:6px 0 14px;padding:12px 16px;background:#FFF8E5;border-left:3px solid #E8A33C;border-radius:6px;color:#5F4A1A;line-height:1.7"></div>
 
-<style>
-.stab{flex:1;min-width:240px;text-align:left;padding:12px 16px;border:1.5px solid #B4B2A9;border-radius:10px;background:#fff;cursor:pointer;transition:all .15s}
-.stab:hover{border-color:#185FA5}
-.stab.active{border-color:#185FA5;background:#E6F1FB;box-shadow:0 1px 4px rgba(24,95,165,0.15)}
-</style>
+<div id="curvesGrid" class="curves-grid"></div>
 
 <div style="margin-bottom:14px">
-<div class="note" style="margin-bottom:8px;color:#5F5E5A">点一家公司或一个指数，把对比年化 r₂ 设成它的长期收益率（个股=ROE中枢；指数=含股息长期年化；数据源已标注）：</div>
+<div class="note" style="margin-bottom:8px;color:#5F5E5A">点一个标的，**应用到当前选中的曲线**（绿色圆点标记）：</div>
 <div id="companies" class="companies"></div>
 </div>
 
 <div class="metrics" id="metricsWrap"></div>
 
 <div class="chart-box"><canvas id="chart" role="img" aria-label="复利曲线对比">复利曲线</canvas></div>
-<div class="legend">
-<span><span class="dot" style="background:#185FA5"></span>基准 r₁</span>
-<span><span class="dot" style="background:#A32D2D"></span>对比 r₂</span>
-<span><span class="dot" style="background:rgba(163,45,45,0.15)"></span>差额区域</span>
-</div>
+<div id="legend" class="legend"></div>
 <div id="summary" class="summary"></div>
 </section>
 
 <section class="card">
-<h2>二、一图看懂：Δr × 时间矩阵</h2>
-<p class="desc">基准 8%，每提高一点收益率，在 5/10/20/30/50/70 年后会"多"出多少倍？</p>
+<h2>二、Δr × 时间矩阵</h2>
+<p class="desc">基准 8%，每提高一点收益率，N 年后多多少倍？</p>
 <div style="overflow-x:auto">
 <table id="dtable">
 <thead><tr><th>每年多赚</th><th>5 年</th><th>10 年</th><th>20 年</th><th>30 年</th><th>50 年</th><th>70 年</th></tr></thead>
 <tbody></tbody>
 </table>
 </div>
-<p class="note">解释：表格里的百分比是"对比终值 ÷ 基准终值 − 1"。例如 +2% / 30 年 = 75%，意思是同样 1 万元，30 年后比基准多 75% 的钱。</p>
+<p class="note">解释："对比终值 ÷ 基准终值 − 1"。+2% / 30 年 = 75% 意思是同样 1 万元，30 年后比基准多 75% 的钱。</p>
 </section>
 
 <section class="card">
 <h2>三、家庭话术：怎么讲给孩子和爱人</h2>
 <div class="story">
-<div class="it">
-<div class="h">折纸类比（讲给孩子）</div>
-<div class="p">"一张纸对折 1 次是 2 层。对折 30 次会比珠穆朗玛峰还高。复利就是每天给自己折一次纸。"</div>
-</div>
-<div class="it">
-<div class="h">雪球类比（讲给爱人）</div>
-<div class="p">"一颗 100 元的雪球，每年长大 10%，30 年后是 1745 元。但如果每年长大 12%，30 年后是 2996 元——多 71%。这 2% 看起来不重要，时间替我们记账。"</div>
-</div>
-<div class="it">
-<div class="h">果树类比（讲给自己）</div>
-<div class="p">"种树最好的时间是 20 年前，其次是现在。果树头三年没产出，第四年才开始结果。坚持过临界点，复利就接管了。"</div>
-</div>
+<div class="it"><div class="h">折纸类比（讲给孩子）</div><div class="p">"一张纸对折 1 次是 2 层。对折 30 次会比珠穆朗玛峰还高。复利就是每天给自己折一次纸。"</div></div>
+<div class="it"><div class="h">雪球类比（讲给爱人）</div><div class="p">"100 元雪球，每年长大 10%，30 年后是 1745 元。但 12% 的雪球，30 年后是 2996 元——多 71%。这 2% 看起来不重要，时间替我们记账。"</div></div>
+<div class="it"><div class="h">果树类比（讲给自己）</div><div class="p">"种树最好的时间是 20 年前，其次是现在。果树头三年没产出，第四年才开始结果。坚持过临界点，复利就接管了。"</div></div>
 </div>
 </section>
 
 <section class="card">
-<h2>四、家庭行动清单</h2>
-<div class="story">
-<div class="it">
-<div class="h">给爱人的 3 件事</div>
-<div class="p">① 一起开一个长期账户（指数基金/优质蓝筹）<br>② 约定每月固定金额，不主动加减<br>③ 每年 12 月 31 日才看一次净值</div>
-</div>
-<div class="it">
-<div class="h">给孩子的 3 件事</div>
-<div class="p">① 给他/她一笔"30 年定存"，写下到期日<br>② 每年生日日复盘一次：本金、利息、新感想<br>③ 家庭"年化 ROE 大赛"：每人选一只股票，年终对账</div>
-</div>
-<div class="it">
-<div class="h">给自己的 3 件事</div>
-<div class="p">① 别追求 30%，先追求"30 年不亏"<br>② 写下三家你愿意持有 10 年的公司及其 ROE<br>③ 每月一次"不动手"练习——什么都不做也是策略</div>
-</div>
-</div>
-</section>
-
-<section class="card">
-<h2>五、温馨提醒</h2>
-<p class="note">长期 ROE 中枢只是"复利速度"的近似上限——实际股东回报还要看：① 估值买卖点；② 股利再投；③ 公司是否长期保留护城河。苹果 ROE 171% 因大量回购致净资产极低，"正常化"后约 30-35%。<br>本工具仅作教育用途，不构成投资建议。公司 ROE 数据来源于最新年报/公开披露（截至 2025 财年），可能与实时披露存在差异。</p>
+<h2>四、温馨提醒</h2>
+<p class="note">长期 ROE/年化只是"复利速度"的近似上限——实际股东回报还要看：① 估值买卖点；② 股利再投；③ 公司是否长期保留护城河。<br>
+苹果 ROE 171% 因大量回购致净资产极低，正常化后约 30-35%。比特币 60% 是 15 年回望，绝不可外推 70 年。债券 3-4% 是当前低利率环境，2000 年代曾达 4-5%。<br>
+通胀基准用的是<b>历史 CPI 长期均值</b>，未来路径未必复制。本工具仅作教育用途，不构成投资建议。</p>
 </section>
 
 <footer class="foot">
@@ -212,70 +196,69 @@ tr:hover td{background:#FAFAF7}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-/* ======== 真实 ROE / 长期年化数据（来源：最新年报、Bloomberg、MSCI、各交易所公开披露） ======== */
+/* ======== 数据 ======== */
 const COMPANIES = [
-  // === 个股 · ROE 中枢 ===
+  // 个股 ROE 中枢
   {cat:'stk',code:'600519',name:'贵州茅台',roe:31,roeLatest:32.5,note:'近5年 ROE 29.9%→36.0%→34.2%→32.5%',src:'2025年报',flag:'🇨🇳'},
   {cat:'stk',code:'00700',name:'腾讯控股',roe:20,roeLatest:21.4,note:'近3年 ROE 15.0%→21.6%→21.4%',src:'2025年报',flag:'🇭🇰'},
-  {cat:'stk',code:'AAPL',name:'苹果 Apple',roe:33,roeLatest:171.4,note:'FY2025 ROE 171%（回购致净资产极低），正常化 ~30-35%',src:'FY2025年报',flag:'🇺🇸'},
-  {cat:'stk',code:'MSFT',name:'微软 Microsoft',roe:33,roeLatest:33.3,note:'FY2025 ROE 33.3%，近5年 ~33-38%',src:'FY2025年报',flag:'🇺🇸'},
-  {cat:'stk',code:'GOOGL',name:'谷歌 Alphabet',roe:34,roeLatest:35.7,note:'2025年报 ROE 35.7%，2024 32.9%',src:'2025年报',flag:'🇺🇸'},
-  {cat:'stk',code:'META',name:'Meta Platforms',roe:33,roeLatest:30.2,note:'2025年报 ROE 30.2%，2024 37.1%',src:'2025年报',flag:'🇺🇸'},
-  {cat:'stk',code:'NVDA',name:'英伟达 NVIDIA',roe:42,roeLatest:115,note:'FY2025 ROE 115%（AI爆发），正常化 ~40-50%',src:'FY2025年报',flag:'🇺🇸'},
-  {cat:'stk',code:'BABA',name:'阿里巴巴',roe:12,roeLatest:13.0,note:'FY2025 ROE 13.0%，FY2026 10.2%',src:'FY2025年报',flag:'🇺🇸'},
-  {cat:'stk',code:'BRK.B',name:'伯克希尔',roe:15,roeLatest:15.0,note:'巴菲特 60 年年化 ~19.8%，近年 ROE ~15%',src:'公开数据',flag:'🇺🇸'},
+  {cat:'stk',code:'AAPL',name:'苹果 Apple',roe:33,roeLatest:171.4,note:'FY2025 ROE 171%（回购致净资产极低）',src:'FY2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'MSFT',name:'微软 Microsoft',roe:33,roeLatest:33.3,note:'FY2025 ROE 33.3%',src:'FY2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'GOOGL',name:'谷歌 Alphabet',roe:34,roeLatest:35.7,note:'2025年报 ROE 35.7%',src:'2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'META',name:'Meta',roe:33,roeLatest:30.2,note:'2025年报 ROE 30.2%',src:'2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'NVDA',name:'英伟达 NVIDIA',roe:42,roeLatest:115,note:'FY2025 ROE 115%（AI爆发）',src:'FY2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'BABA',name:'阿里巴巴',roe:12,roeLatest:13.0,note:'FY2025 ROE 13.0%',src:'FY2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'BRK.B',name:'伯克希尔',roe:15,roeLatest:15,note:'巴菲特 60 年 ~19.8%，近年 ROE ~15%',src:'公开数据',flag:'🇺🇸'},
 
-  // === 中国大陆指数 · 含股息长期年化 ===
-  {cat:'cn',code:'CSI300',name:'沪深300',roe:8,roeLatest:8,note:'A股核心宽基，近20年含股息年化 ~8-9%',src:'中证指数',flag:'🇨🇳'},
-  {cat:'cn',code:'CSI500',name:'中证500',roe:9,roeLatest:9,note:'A股中盘，近15年含股息年化 ~8-10%',src:'中证指数',flag:'🇨🇳'},
-  {cat:'cn',code:'CSI1000',name:'中证1000',roe:8,roeLatest:8,note:'A股小盘，含股息年化 ~7-9%（波动较大）',src:'中证指数',flag:'🇨🇳'},
-  {cat:'cn',code:'CHINEXT',name:'创业板指',roe:10,roeLatest:10,note:'成长股集中，含股息年化 ~10-12%（波动大）',src:'深交所',flag:'🇨🇳'},
-  {cat:'cn',code:'CSIA500',name:'中证A500',roe:9,roeLatest:9,note:'2024年新发布，全行业核心资产 ~9%',src:'中证指数',flag:'🇨🇳'},
+  // 中国大陆
+  {cat:'cn',code:'CSI300',name:'沪深300',roe:8,note:'A股核心宽基，近20年含股息 ~8-9%',src:'中证指数',flag:'🇨🇳'},
+  {cat:'cn',code:'CSI500',name:'中证500',roe:9,note:'A股中盘，近15年含股息 ~8-10%',src:'中证指数',flag:'🇨🇳'},
+  {cat:'cn',code:'CSI1000',name:'中证1000',roe:8,note:'A股小盘，~7-9%',src:'中证指数',flag:'🇨🇳'},
+  {cat:'cn',code:'CHINEXT',name:'创业板指',roe:10,note:'成长股，~10-12%',src:'深交所',flag:'🇨🇳'},
+  {cat:'cn',code:'CSIA500',name:'中证A500',roe:9,note:'2024 新发布，全行业核心资产 ~9%',src:'中证指数',flag:'🇨🇳'},
 
-  // === 港股指数 ===
-  {cat:'hk',code:'HSI',name:'恒生指数',roe:8,roeLatest:8,note:'港股大盘，近30年含股息年化 ~8-9%',src:'恒生指数公司',flag:'🇭🇰'},
-  {cat:'hk',code:'HSCEI',name:'恒生中国企业',roe:7,roeLatest:7,note:'H股，含股息年化 ~7-8%',src:'恒生指数公司',flag:'🇭🇰'},
-  {cat:'hk',code:'HSTECH',name:'恒生科技',roe:9,roeLatest:9,note:'港股科技龙头，自2020年发布，预期 ~8-12%',src:'恒生指数公司',flag:'🇭🇰'},
+  // 港股
+  {cat:'hk',code:'HSI',name:'恒生指数',roe:8,note:'港股大盘，近30年含股息 ~8-9%',src:'恒生指数公司',flag:'🇭🇰'},
+  {cat:'hk',code:'HSCEI',name:'恒生中国企业',roe:7,note:'H股，~7-8%',src:'恒生指数公司',flag:'🇭🇰'},
+  {cat:'hk',code:'HSTECH',name:'恒生科技',roe:9,note:'港股科技龙头，预期 ~8-12%',src:'恒生指数公司',flag:'🇭🇰'},
 
-  // === 美股指数 / ETF ===
-  {cat:'us',code:'SPX',name:'标普500',roe:10,roeLatest:10,note:'1957-2024 含股息年化 ~10%（最稳）',src:'S&P Dow Jones',flag:'🇺🇸'},
-  {cat:'us',code:'QQQ',name:'纳斯达克100 (QQQ)',roe:13,roeLatest:13,note:'科技股集中，近20年含股息年化 ~13-14%',src:'Invesco/Nasdaq',flag:'🇺🇸'},
-  {cat:'us',code:'DJI',name:'道琼斯工业',roe:8,roeLatest:8,note:'30 蓝筹，长期含股息 ~8-9%',src:'S&P Dow Jones',flag:'🇺🇸'},
-  {cat:'us',code:'IWM',name:'罗素2000 (IWM)',roe:9,roeLatest:9,note:'美股小盘，长期含股息 ~9-10%',src:'FTSE Russell',flag:'🇺🇸'},
-  {cat:'us',code:'VTI',name:'全美股 (VTI)',roe:10,roeLatest:10,note:'Vanguard 全美股，含股息年化 ~10%',src:'CRSP',flag:'🇺🇸'},
+  // 美股
+  {cat:'us',code:'SPX',name:'标普500',roe:10,note:'1957-2024 含股息 ~10%（最稳）',src:'S&P',flag:'🇺🇸'},
+  {cat:'us',code:'QQQ',name:'纳斯达克100 (QQQ)',roe:13,note:'科技集中，近20年 ~13-14%',src:'Invesco',flag:'🇺🇸'},
+  {cat:'us',code:'DJI',name:'道琼斯工业',roe:8,note:'30 蓝筹，~8-9%',src:'S&P',flag:'🇺🇸'},
+  {cat:'us',code:'IWM',name:'罗素2000 (IWM)',roe:9,note:'美股小盘',src:'FTSE Russell',flag:'🇺🇸'},
+  {cat:'us',code:'VTI',name:'全美股 (VTI)',roe:10,note:'Vanguard 全美股 ~10%',src:'CRSP',flag:'🇺🇸'},
 
-  // === 日韩新印越 ===
-  {cat:'apac',code:'N225',name:'日经225',roe:8,roeLatest:8,note:'日本大盘，2010 后含股息年化 ~8-10%',src:'日经新闻',flag:'🇯🇵'},
-  {cat:'apac',code:'TOPIX',name:'东证 TOPIX',roe:7,roeLatest:7,note:'日本全市场，含股息年化 ~6-8%',src:'JPX',flag:'🇯🇵'},
-  {cat:'apac',code:'KOSPI',name:'韩国 KOSPI',roe:7,roeLatest:7,note:'韩国综合，含股息年化 ~7-8%',src:'KRX',flag:'🇰🇷'},
-  {cat:'apac',code:'STI',name:'新加坡 STI',roe:7,roeLatest:7,note:'海峡时报指数，含股息年化 ~7-8%（高股息）',src:'SGX',flag:'🇸🇬'},
-  {cat:'apac',code:'NIFTY',name:'印度 NIFTY50',roe:13,roeLatest:13,note:'印度大盘，近20年含股息年化 ~12-14%',src:'NSE',flag:'🇮🇳'},
-  {cat:'apac',code:'VN30',name:'越南 VN30',roe:11,roeLatest:11,note:'越南龙头30，含股息年化 ~10-12%（前沿市场）',src:'HOSE',flag:'🇻🇳'},
+  // 亚太
+  {cat:'apac',code:'N225',name:'日经225',roe:8,note:'2010 后含股息 ~8-10%',src:'日经新闻',flag:'🇯🇵'},
+  {cat:'apac',code:'TOPIX',name:'东证 TOPIX',roe:7,note:'日本全市场 ~6-8%',src:'JPX',flag:'🇯🇵'},
+  {cat:'apac',code:'KOSPI',name:'韩国 KOSPI',roe:7,note:'~7-8%',src:'KRX',flag:'🇰🇷'},
+  {cat:'apac',code:'STI',name:'新加坡 STI',roe:7,note:'~7-8%（高股息）',src:'SGX',flag:'🇸🇬'},
+  {cat:'apac',code:'NIFTY',name:'印度 NIFTY50',roe:13,note:'近20年 ~12-14%',src:'NSE',flag:'🇮🇳'},
+  {cat:'apac',code:'VN30',name:'越南 VN30',roe:11,note:'前沿市场 ~10-12%',src:'HOSE',flag:'🇻🇳'},
 
-  // === 欧洲与全球 ===
-  {cat:'eu',code:'DAX',name:'德国 DAX',roe:8,roeLatest:8,note:'含股息年化 ~7-9%（DAX 是含息指数）',src:'Deutsche Börse',flag:'🇩🇪'},
-  {cat:'eu',code:'CAC40',name:'法国 CAC40',roe:7,roeLatest:7,note:'法国大盘，含股息年化 ~7-8%',src:'Euronext',flag:'🇫🇷'},
-  {cat:'eu',code:'STOXX50',name:'欧洲 STOXX50',roe:7,roeLatest:7,note:'欧洲蓝筹50，含股息年化 ~7-8%',src:'STOXX',flag:'🇪🇺'},
-  {cat:'eu',code:'FTSE100',name:'英国 FTSE100',roe:7,roeLatest:7,note:'伦敦大盘，含股息年化 ~6-8%（高股息）',src:'FTSE Russell',flag:'🇬🇧'},
-  {cat:'eu',code:'MSCIWLD',name:'MSCI 全球 (ACWI)',roe:9,roeLatest:9,note:'全球股票，近20年含股息年化 ~8-9%',src:'MSCI',flag:'🌍'},
-  {cat:'eu',code:'MSCIEM',name:'MSCI 新兴市场',roe:7,roeLatest:7,note:'新兴市场，含股息年化 ~6-8%',src:'MSCI',flag:'🌍'},
+  // 欧洲与全球
+  {cat:'eu',code:'DAX',name:'德国 DAX',roe:8,note:'含息指数 ~7-9%',src:'DB',flag:'🇩🇪'},
+  {cat:'eu',code:'CAC40',name:'法国 CAC40',roe:7,note:'~7-8%',src:'Euronext',flag:'🇫🇷'},
+  {cat:'eu',code:'STOXX50',name:'欧洲 STOXX50',roe:7,note:'欧洲蓝筹50',src:'STOXX',flag:'🇪🇺'},
+  {cat:'eu',code:'FTSE100',name:'英国 FTSE100',roe:7,note:'~6-8%（高股息）',src:'FTSE',flag:'🇬🇧'},
+  {cat:'eu',code:'MSCIWLD',name:'MSCI 全球 (ACWI)',roe:9,note:'近20年 ~8-9%',src:'MSCI',flag:'🌍'},
+  {cat:'eu',code:'MSCIEM',name:'MSCI 新兴市场',roe:7,note:'~6-8%',src:'MSCI',flag:'🌍'},
 
-  // === 现金/债券/避险/另类 ===
-  {cat:'cash',code:'GOLD',name:'黄金（美元计价）',roe:7,roeLatest:7,note:'1971 布雷顿森林解体至今美元计价 ~7%（剧烈波动）',src:'LBMA',flag:'🥇'},
-  {cat:'cash',code:'GOLDCNY',name:'黄金（人民币计价）',roe:8,roeLatest:8,note:'2002-2025 人民币金价年化 ~8-9%（叠加汇率）',src:'上金所',flag:'🥇'},
-  {cat:'cash',code:'TLT',name:'美国 20 年国债 (TLT)',roe:4,roeLatest:4,note:'iShares TLT，长期含票息回报 ~4%',src:'iShares',flag:'🇺🇸'},
-  {cat:'cash',code:'IEF',name:'美国 10 年国债 (IEF)',roe:4,roeLatest:4,note:'iShares IEF，长期含票息回报 ~3.5-4.5%',src:'iShares',flag:'🇺🇸'},
-  {cat:'cash',code:'SHY',name:'美国短债 (SHY 1-3Y)',roe:3,roeLatest:3,note:'iShares 1-3 年美债，长期 ~2.5-3.5%',src:'iShares',flag:'🇺🇸'},
-  {cat:'cash',code:'CN10Y',name:'中国 10 年国债',roe:3,roeLatest:2.7,note:'近 10 年到期收益率 2.5-3.5%，2025 年 ~2.7%',src:'中债登',flag:'🇨🇳'},
-  {cat:'cash',code:'CGB',name:'中国国债指数 (CSI)',roe:4,roeLatest:4,note:'中证全债指数 2002 至今含息年化 ~4%',src:'中证指数',flag:'🇨🇳'},
-  {cat:'cash',code:'CN30Y',name:'中国 30 年超长国债',roe:3.5,roeLatest:3.0,note:'近 5 年到期收益率 ~3-3.5%（含资本利得）',src:'中债登',flag:'🇨🇳'},
-  {cat:'cash',code:'HYG',name:'美国高收益债 (HYG)',roe:6,roeLatest:6,note:'iShares HYG，垃圾债，长期含息 ~5-7%',src:'iShares',flag:'🇺🇸'},
-  {cat:'cash',code:'TIPS',name:'美国通胀保护债 (TIP)',roe:3,roeLatest:3,note:'iShares TIP，扣除通胀后实际 ~1-2%，名义 ~3%',src:'iShares',flag:'🇺🇸'},
-  {cat:'cash',code:'BTC',name:'比特币 (BTC)',roe:60,roeLatest:60,note:'2010 至今年化 ~60%（极高波动，持有难度大）',src:'CoinMarketCap',flag:'₿'},
-  {cat:'cash',code:'OIL',name:'原油 (WTI)',roe:3,roeLatest:3,note:'1986 至今年化 ~3-4%（强周期，不适合长持）',src:'EIA',flag:'🛢️'},
-  {cat:'cash',code:'REIT',name:'美国 REITs (VNQ)',roe:9,roeLatest:9,note:'Vanguard VNQ 房地产 ETF，长期含息 ~8-10%',src:'Vanguard',flag:'🏘️'},
-  {cat:'cash',code:'CNY_DEP',name:'人民币 5 年定存',roe:2,roeLatest:2,note:'2025 年大行 5 年期 ~1.55-2%',src:'央行基准',flag:'💰'},
-  {cat:'cash',code:'CPI',name:'通胀（参考线）',roe:3,roeLatest:3,note:'中国 CPI 长期 ~2-3%，美国 ~3%（购买力底线）',src:'统计局',flag:'📊'}
+  // 债券/避险/另类
+  {cat:'cash',code:'GOLD',name:'黄金（美元）',roe:7,note:'1971 至今美元 ~7%',src:'LBMA',flag:'🥇'},
+  {cat:'cash',code:'GOLDCNY',name:'黄金（人民币）',roe:8,note:'2002-2025 ~8-9%',src:'上金所',flag:'🥇'},
+  {cat:'cash',code:'TLT',name:'美 20 年国债 (TLT)',roe:4,note:'iShares TLT ~4%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'IEF',name:'美 10 年国债 (IEF)',roe:4,note:'~3.5-4.5%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'SHY',name:'美短债 (SHY)',roe:3,note:'1-3 年美债 ~2.5-3.5%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'CN10Y',name:'中国 10 年国债',roe:3,note:'2025 ~2.7%',src:'中债登',flag:'🇨🇳'},
+  {cat:'cash',code:'CGB',name:'中国国债指数',roe:4,note:'中证全债 2002 至今 ~4%',src:'中证指数',flag:'🇨🇳'},
+  {cat:'cash',code:'CN30Y',name:'中国 30 年超长债',roe:3.5,note:'近5年 ~3-3.5%',src:'中债登',flag:'🇨🇳'},
+  {cat:'cash',code:'HYG',name:'美高收益债 (HYG)',roe:6,note:'~5-7%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'TIPS',name:'美通胀保护债 (TIP)',roe:3,note:'实际 ~1-2%，名义 ~3%',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'BTC',name:'比特币',roe:60,note:'2010 至今 ~60%（极端波动）',src:'CMC',flag:'₿'},
+  {cat:'cash',code:'OIL',name:'原油 (WTI)',roe:3,note:'1986 至今 ~3-4%',src:'EIA',flag:'🛢️'},
+  {cat:'cash',code:'REIT',name:'美 REITs (VNQ)',roe:9,note:'~8-10%',src:'Vanguard',flag:'🏘️'},
+  {cat:'cash',code:'CNY_DEP',name:'人民币 5 年定存',roe:2,note:'2025 大行 1.55-2%',src:'央行',flag:'💰'}
 ];
 
 const CAT_LABELS = {
@@ -288,62 +271,112 @@ const CAT_LABELS = {
   cash:'💰 债券 / 黄金 / 另类 / 现金'
 };
 
+/* ======== 4 条曲线状态 ======== */
+const CURVES = [
+  {id:0, label:'指数基准', rate:8,  color:'#185FA5', enabled:true,  selected:true},
+  {id:1, label:'对比A',    rate:15, color:'#A32D2D', enabled:true,  selected:false},
+  {id:2, label:'对比B',    rate:20, color:'#1D7A4F', enabled:false, selected:false},
+  {id:3, label:'对比C',    rate:30, color:'#9B5BC8', enabled:false, selected:false}
+];
+
 const fmt = n => {
-  if(n>=1e12) return '¥'+(n/1e12).toFixed(2)+'万亿';
-  if(n>=1e8) return '¥'+(n/1e8).toFixed(2)+'亿';
-  if(n>=1e4) return '¥'+(n/1e4).toFixed(1)+'万';
-  return '¥'+Math.round(n).toLocaleString();
+  const sign = n<0?'-':''; n=Math.abs(n);
+  if(n>=1e12) return sign+'¥'+(n/1e12).toFixed(2)+'万亿';
+  if(n>=1e8) return sign+'¥'+(n/1e8).toFixed(2)+'亿';
+  if(n>=1e4) return sign+'¥'+(n/1e4).toFixed(1)+'万';
+  return sign+'¥'+Math.round(n).toLocaleString();
 };
-const pct = n => (n*100).toFixed(0)+'%';
 const $ = id => document.getElementById(id);
 const ctx = $('chart');
 
 let chart = null;
+let curScale = 'linear';
+let curMode = 'nominal'; // nominal | real | both
+
+function getInflRate(){
+  const sel = $('inflPreset').value;
+  if(sel==='custom') return (+$('inflCustom').value||0)/100;
+  return (+sel||0)/100;
+}
+
+function buildCurvesUI(){
+  const grid = $('curvesGrid');
+  grid.innerHTML = '';
+  CURVES.forEach((c,i)=>{
+    const card = document.createElement('div');
+    card.className = 'curve-card' + (c.enabled?'':' disabled');
+    card.style.borderColor = c.enabled ? c.color : 'rgba(0,0,0,0.10)';
+    if(c.selected && c.enabled) card.style.boxShadow = '0 0 0 2px '+c.color+'40';
+    card.innerHTML = `
+      <div class="row">
+        <input type="checkbox" data-id="${c.id}" class="cv-en" ${c.enabled?'checked':''}>
+        <div class="curve-color-dot" style="background:${c.color}"></div>
+        <input type="text" data-id="${c.id}" class="cv-lbl" value="${c.label}">
+        ${c.enabled?`<span style="font-size:11px;color:${c.selected?'#1D7A4F':'#888780'};cursor:pointer" data-id="${c.id}" class="cv-sel">${c.selected?'● 选中':'○ 选择'}</span>`:''}
+      </div>
+      <div class="rate-row">
+        <input type="range" data-id="${c.id}" class="cv-rng" min="-5" max="80" step="0.1" value="${c.rate}" style="color:${c.color}">
+        <input type="number" data-id="${c.id}" class="cv-num" value="${c.rate}" step="0.1" min="-50" max="200">
+        <span style="font-size:13px;color:#5F5E5A">%</span>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+
+  grid.querySelectorAll('.cv-en').forEach(el=>el.onchange=e=>{
+    const id=+e.target.dataset.id; CURVES[id].enabled=e.target.checked;
+    if(!e.target.checked && CURVES[id].selected){
+      CURVES[id].selected=false;
+      const first = CURVES.find(x=>x.enabled);
+      if(first) first.selected=true;
+    }
+    buildCurvesUI(); update();
+  });
+  grid.querySelectorAll('.cv-lbl').forEach(el=>el.oninput=e=>{
+    CURVES[+e.target.dataset.id].label=e.target.value; update();
+  });
+  grid.querySelectorAll('.cv-sel').forEach(el=>el.onclick=e=>{
+    const id=+e.target.dataset.id;
+    CURVES.forEach(c=>c.selected=false); CURVES[id].selected=true; buildCurvesUI(); update();
+  });
+  grid.querySelectorAll('.cv-rng').forEach(el=>el.oninput=e=>{
+    const id=+e.target.dataset.id; const v=+e.target.value;
+    CURVES[id].rate=v;
+    grid.querySelector('.cv-num[data-id="'+id+'"]').value=v;
+    update();
+  });
+  grid.querySelectorAll('.cv-num').forEach(el=>el.oninput=e=>{
+    const id=+e.target.dataset.id; const v=+e.target.value;
+    CURVES[id].rate=v;
+    const rng=grid.querySelector('.cv-rng[data-id="'+id+'"]');
+    if(v>=parseFloat(rng.min)&&v<=parseFloat(rng.max)) rng.value=v;
+    update();
+  });
+}
 
 function buildChart(maxY){
   const years = Array.from({length:maxY+1},(_,i)=>i);
   if(chart) chart.destroy();
   chart = new Chart(ctx,{
     type:'line',
-    data:{labels:years,datasets:[
-      {label:'r1',data:[],borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.04)',borderWidth:2.5,pointRadius:0,tension:0.1,fill:false},
-      {label:'r2',data:[],borderColor:'#A32D2D',backgroundColor:'rgba(163,45,45,0.04)',borderWidth:2.5,pointRadius:0,tension:0.1,fill:false},
-      {label:'gap',data:[],borderColor:'transparent',backgroundColor:'rgba(163,45,45,0.10)',borderWidth:0,pointRadius:0,tension:0.1,fill:{target:'r1',above:'rgba(163,45,45,0.10)'}}
-    ]},
+    data:{labels:years,datasets:[]},
     options:{
       responsive:true,maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
-      plugins:{legend:{display:false},
+      plugins:{
+        legend:{display:false},
         tooltip:{
-          backgroundColor:'rgba(255,255,255,0.97)',
-          titleColor:'#2C2C2A',
-          bodyColor:'#2C2C2A',
-          borderColor:'#B4B2A9',
-          borderWidth:1,
-          cornerRadius:8,
-          padding:12,
-          titleFont:{size:14,weight:'600'},
-          bodyFont:{size:12},
+          backgroundColor:'rgba(255,255,255,0.97)', titleColor:'#2C2C2A', bodyColor:'#2C2C2A',
+          borderColor:'#B4B2A9', borderWidth:1, cornerRadius:8, padding:12,
+          titleFont:{size:14,weight:'600'}, bodyFont:{size:12},
           callbacks:{
             title:c=>c[0].label+' 年',
-            label:c=>{
-              const m={r1:'基准 r₁',r2:'对比 r₂',gap:'差额'};
-              if(c.dataset.label==='gap') return '';
-              return (m[c.dataset.label]||c.dataset.label)+': '+fmt(c.parsed.y);
-            },
-            afterBody:c=>{
-              const r1v=c.find(x=>x.dataset.label==='r1');
-              const r2v=c.find(x=>x.dataset.label==='r2');
-              if(!r1v||!r2v) return '';
-              const gap=r2v.parsed.y-r1v.parsed.y;
-              const pctGap=r1v.parsed.y>0?((gap/r1v.parsed.y)*100).toFixed(0)+'%':'—';
-              return ['────────────','差额: '+fmt(gap)+' ('+pctGap+')'];
-            }
+            label:c=>c.dataset.label+': '+fmt(c.parsed.y)
           }
         }
       },
       scales:{
-        y:{type:window._yScale||'linear',ticks:{callback:v=>fmt(v),font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}},
+        y:{type:curScale,ticks:{callback:v=>fmt(v),font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}},
         x:{title:{display:true,text:'年',font:{size:11}},ticks:{font:{size:11},maxTicksLimit:15},grid:{display:false}}
       }
     }
@@ -351,83 +384,159 @@ function buildChart(maxY){
 }
 
 function fv(p,r,years,addPerYear){
-  const arr=[];
-  let v=p;
-  for(let y=0;y<=years;y++){
-    arr.push(v);
-    v = v*(1+r) + (addPerYear||0);
-  }
+  const arr=[]; let v=p;
+  for(let y=0;y<=years;y++){ arr.push(v); v=v*(1+r)+(addPerYear||0); }
   return arr;
+}
+function deflate(arr,inflRate){
+  return arr.map((v,y)=>v/Math.pow(1+inflRate,y));
 }
 
 function update(){
   const p = +$('p').value || 0;
   const add = +$('add').value || 0;
-  const r1 = +$('r1').value/100;
-  const r2 = +$('r2').value/100;
   const maxY = +$('maxYear').value;
-  $('r1lbl').textContent = (r1*100).toFixed(1)+'%';
-  $('r2lbl').textContent = (r2*100).toFixed(1)+'%';
+  const inflRate = getInflRate();
 
-  if(!chart || chart.data.labels.length !== maxY+1) buildChart(maxY);
+  if(!chart || chart.data.labels.length !== maxY+1 || chart.options.scales.y.type !== curScale){
+    buildChart(maxY);
+  }
 
-  const a1 = fv(p,r1,maxY,add);
-  const a2 = fv(p,r2,maxY,add);
-  const ag = a2.map((v,i)=>v-a1[i]);
+  // 计算每条曲线
+  const datasets = [];
+  const enabled = CURVES.filter(c=>c.enabled);
+  enabled.forEach(c=>{
+    const r = c.rate/100;
+    const nominal = fv(p,r,maxY,add);
+    const real = deflate(nominal,inflRate);
+    if(curMode==='nominal' || curMode==='both'){
+      datasets.push({
+        label: c.label+' (名义 '+c.rate.toFixed(1)+'%)',
+        data: nominal,
+        borderColor: c.color,
+        backgroundColor: c.color+'10',
+        borderWidth: 2.5, pointRadius:0, tension:0.1,
+        borderDash: []
+      });
+    }
+    if(curMode==='real' || curMode==='both'){
+      datasets.push({
+        label: c.label+' (真实 ≈'+(c.rate-inflRate*100).toFixed(1)+'%)',
+        data: real,
+        borderColor: c.color,
+        backgroundColor: c.color+'08',
+        borderWidth: curMode==='both'?1.8:2.5, pointRadius:0, tension:0.1,
+        borderDash: curMode==='both'?[6,4]:[]
+      });
+    }
+  });
 
-  chart.data.datasets[0].data = a1;
-  chart.data.datasets[1].data = a2;
-  chart.data.datasets[2].data = ag;
+  // 通胀基准（仅在 nominal 模式下展示）
+  if(curMode==='nominal' && inflRate>0){
+    const inflLine = years => Array.from({length:maxY+1},(_,y)=>p*Math.pow(1+inflRate,y));
+    datasets.push({
+      label: '本金按通胀膨胀（购买力等价线）',
+      data: inflLine(),
+      borderColor:'#888780', backgroundColor:'transparent',
+      borderWidth:1.5, pointRadius:0, tension:0.1, borderDash:[3,3]
+    });
+  }
+
+  chart.data.datasets = datasets;
   chart.update('none');
 
   // metrics
-  const milestones = [5,10,20,30,40,50,60,70].filter(y=>y<=maxY);
   const wrap = $('metricsWrap');
   wrap.innerHTML = '';
-  const isHigher = r2 >= r1;
-  milestones.forEach(y=>{
-    const ratioNum = a1[y]>0 ? (a2[y]/a1[y]-1)*100 : 0;
-    const ratio = a1[y]>0 ? (ratioNum>=0?'+':'')+ratioNum.toFixed(0)+'%' : '—';
-    const lblTxt = isHigher ? 'r₂ 比 r₁ 多赚' : 'r₂ 比 r₁ 少赚';
-    const color = isHigher ? '#A32D2D' : '#1D7A4F';
+  const baseLine = enabled[0];
+  if(!baseLine){ wrap.innerHTML = '<div class="m"><div class="lbl">至少启用一条曲线</div></div>'; $('summary').innerHTML=''; renderLegend(datasets); return; }
+  const baseR = baseLine.rate/100;
+  const baseArr = fv(p,baseR,maxY,add);
+  const ms = [10,20,30,50,70].filter(y=>y<=maxY);
+  ms.forEach(y=>{
     const d = document.createElement('div');
     d.className='m';
-    d.innerHTML=`<div class="lbl">${y} 年差距</div><div class="v" style="color:${color}">${ratio}</div><div class="yr">${lblTxt}</div>`;
+    let html = `<div class="lbl">${y} 年（${curMode==='real'?'真实':'名义'}）</div>`;
+    html += `<div class="v" style="color:${baseLine.color}">${fmt(curMode==='real'?baseArr[y]/Math.pow(1+inflRate,y):baseArr[y])}</div>`;
+    html += `<div class="yr">基准 · ${baseLine.label}</div>`;
+    d.innerHTML = html;
     wrap.appendChild(d);
   });
 
   // summary
-  const s20 = 20<=maxY, s30 = 30<=maxY, s50 = 50<=maxY, s70 = 70<=maxY;
-  let html = '';
-  if(s20) html += '<b>20 年</b>：基准 '+fmt(a1[20])+' / 对比 '+fmt(a2[20])+'，相差 '+fmt(a2[20]-a1[20])+'。';
-  if(s30) html += '<br><b>30 年</b>：基准 '+fmt(a1[30])+' / 对比 '+fmt(a2[30])+'，相差 '+fmt(a2[30]-a1[30])+'。';
-  if(s50) html += '<br><b>50 年</b>：基准 '+fmt(a1[50])+' / 对比 '+fmt(a2[50])+'，相差 '+fmt(a2[50]-a1[50])+'。';
-  if(s70) html += '<br><b>70 年</b>：基准 '+fmt(a1[70])+' / 对比 '+fmt(a2[70])+'，相差 '+fmt(a2[70]-a1[70])+'。';
-  html += '<br>每年看似只多 '+((r2-r1)*100).toFixed(1)+'%';
-  if(s30) html += '，30 年后拉开 '+((a2[30]/a1[30]-1)*100).toFixed(0)+'%';
-  if(s50) html += '，50 年后拉开 '+((a2[50]/a1[50]-1)*100).toFixed(0)+'%';
-  if(s70) html += '，70 年后拉开 '+((a2[70]/a1[70]-1)*100).toFixed(0)+'%';
-  html += ' 的距离。';
-  $('summary').innerHTML = html;
+  let s = '<b>通胀设定</b>：'+(inflRate*100).toFixed(1)+'%/年。';
+  s += '<br><b>启用曲线</b>：';
+  s += enabled.map(c=>{
+    const arr = fv(p,c.rate/100,maxY,add);
+    const last = arr[maxY];
+    const realLast = last/Math.pow(1+inflRate,maxY);
+    return `${c.label} ${c.rate.toFixed(1)}% → ${maxY}年名义 ${fmt(last)} / 真实 ${fmt(realLast)}`;
+  }).join(' ｜ ');
+
+  // 比较：基准 vs 其他
+  if(enabled.length>1){
+    s += '<br><b>vs 基准</b>：';
+    s += enabled.slice(1).map(c=>{
+      const a = fv(p,c.rate/100,maxY,add)[maxY];
+      const b = baseArr[maxY];
+      const ratio = b>0?((a/b-1)*100).toFixed(0)+'%':'—';
+      return c.label+' '+(a>b?'+':'')+ratio;
+    }).join('；');
+  }
+  $('summary').innerHTML = s;
+
+  renderLegend(datasets);
 }
 
-['p','add','r1','r2','maxYear'].forEach(id=>$(id).addEventListener('input',update));
-$('maxYear').addEventListener('change',update);
+function renderLegend(datasets){
+  $('legend').innerHTML = datasets.map(d=>
+    `<span><span class="dot" style="background:${d.borderColor};${d.borderDash&&d.borderDash.length?'background:repeating-linear-gradient(90deg,'+d.borderColor+' 0 4px,transparent 4px 7px)':''}"></span>${d.label}</span>`
+  ).join('');
+}
 
+/* ======== 公司按钮（应用到选中曲线）======== */
+function buildCompanies(){
+  const cwrap = $('companies');
+  cwrap.innerHTML = '';
+  const cats = {};
+  COMPANIES.forEach(c=>{ (cats[c.cat]=cats[c.cat]||[]).push(c); });
+  Object.keys(CAT_LABELS).forEach(catKey=>{
+    if(!cats[catKey]) return;
+    const t = document.createElement('div');
+    t.style.cssText = 'grid-column:1/-1;font-size:12px;font-weight:600;color:#5F5E5A;margin-top:8px;margin-bottom:-2px;padding-top:6px;border-top:0.5px solid rgba(0,0,0,0.06)';
+    t.textContent = CAT_LABELS[catKey];
+    cwrap.appendChild(t);
+    cats[catKey].forEach(c=>{
+      const b = document.createElement('button');
+      b.className='cbtn';
+      const labelKind = catKey==='stk' ? '长期 ROE 中枢' : (catKey==='cash' ? '长期年化' : '含股息长期年化');
+      b.innerHTML = `<div class="name">${c.flag} ${c.name} <span style="color:#888780;font-size:11px">${c.code}</span></div>`+
+        `<div class="roe">${labelKind} ~${c.roe}%${catKey==='stk'?` · 最新 ${c.roeLatest}%`:''}</div>`+
+        `<div class="src">${c.note} · 数据源: ${c.src}</div>`;
+      b.onclick = ()=>{
+        const sel = CURVES.find(x=>x.selected && x.enabled) || CURVES.find(x=>x.enabled);
+        if(!sel){ alert('请先启用一条曲线'); return; }
+        sel.rate = c.roe;
+        sel.label = c.flag+' '+c.name;
+        document.querySelectorAll('.cbtn').forEach(x=>x.classList.remove('sel'));
+        b.classList.add('sel');
+        buildCurvesUI(); update();
+      };
+      cwrap.appendChild(b);
+    });
+  });
+}
+
+/* ======== 模式 / 刻度切换 ======== */
 const EXPLAIN = {
-  linear: '<b>① 指数样子 · 线性 Y 轴</b><br>'+
-    'Y 轴每格代表"等量金钱"（比如每格 ¥10 万）。在这种刻度下，复利的本质——<b>每年按百分比增长</b>——会让曲线<b>越往后越陡</b>，前 20 年几乎贴地，第 30-50 年突然"起飞"。这就是经典的<b>曲棍球棒</b>形态，也是巴菲特"雪球越滚越大"那个隐喻的视觉来源。<br>👉 用这个视图：<b>给孩子和家人</b>看，让他们感受时间的爆发力。',
-  logarithmic: '<b>② 对数样子 · 对数 Y 轴</b><br>'+
-    'Y 轴每格代表"等比金钱"（¥1万 → ¥10万 → ¥100万 → ¥1000万 每格都是 10 倍）。<b>同样一笔钱，从 1万 涨到 10万 和从 100万 涨到 1000万，在对数图里高度一样</b>——因为它们都是"涨了 10 倍"。<br><br>👉 <b>"为什么不爆炸了？"</b> 不是数字变小了，是<b>尺子换了</b>。原本你看的是"高度"，现在看的是"倍数"。指数增长在数学上就是<b>每年涨同一个百分比</b>，所以它在对数轴上必然是一条<b>斜率恒定的直线</b>——直线越陡 = 年化越高。这就是为什么物理学画地震烈度、金融画长期股价、生物学画细胞分裂，<b>跨数量级时全部用对数图</b>。<br><br>👉 用这个视图：<b>给自己看</b>，比较两条曲线的"DNA"——谁的基因更优秀，一眼看清。'
+  linear:'<b>① 指数样子 · 线性 Y 轴</b><br>Y 轴每格代表"<b>等量金钱</b>"。复利的本质是每年按百分比增长，曲线<b>越往后越陡</b>，前 20 年贴地，第 30-50 年突然起飞——经典的<b>曲棍球棒</b>。<br>👉 用这个视图：<b>给孩子和家人</b>看，让他们感受时间的爆发力。',
+  logarithmic:'<b>② 对数样子 · 对数 Y 轴</b><br>Y 轴每格代表"<b>等比金钱</b>"（¥1万→¥10万→¥100万 每格 10 倍）。<br><br>👉 <b>"为什么不爆炸了？"</b> 不是数字变小，是<b>尺子换了</b>。指数增长在数学上就是每年涨同一个百分比，所以它在对数轴上必然是一条<b>斜率恒定的直线</b>——直线越陡 = 年化越高。<br><br>👉 用这个视图：<b>给自己看</b>，比较多条曲线的"DNA"——谁的基因更优秀，一眼看清。'
 };
-
-let curScale = 'linear';
 document.querySelectorAll('.stab').forEach(b=>{
   b.addEventListener('click',()=>{
     document.querySelectorAll('.stab').forEach(x=>x.classList.remove('active'));
     b.classList.add('active');
     curScale = b.dataset.scale;
-    window._yScale = curScale;
     $('scaleExplain').innerHTML = EXPLAIN[curScale];
     buildChart(+$('maxYear').value);
     update();
@@ -435,51 +544,43 @@ document.querySelectorAll('.stab').forEach(b=>{
 });
 $('scaleExplain').innerHTML = EXPLAIN.linear;
 
-// company buttons grouped by category
-const cwrap = $('companies');
-cwrap.innerHTML = '';
-const cats = {};
-COMPANIES.forEach(c=>{ (cats[c.cat]=cats[c.cat]||[]).push(c); });
-Object.keys(CAT_LABELS).forEach(catKey=>{
-  if(!cats[catKey]) return;
-  const groupTitle = document.createElement('div');
-  groupTitle.style.cssText = 'grid-column:1/-1;font-size:12px;font-weight:600;color:#5F5E5A;margin-top:8px;margin-bottom:-2px;padding-top:6px;border-top:0.5px solid rgba(0,0,0,0.06)';
-  groupTitle.textContent = CAT_LABELS[catKey];
-  cwrap.appendChild(groupTitle);
-  cats[catKey].forEach(c=>{
-    const b = document.createElement('button');
-    b.className='cbtn';
-    const labelKind = catKey==='stk' ? '长期 ROE 中枢' : (catKey==='cash' ? '长期年化' : '含股息长期年化');
-    b.innerHTML = `<div class="name">${c.flag} ${c.name} <span style="color:#888780;font-size:11px">${c.code}</span></div>`+
-      `<div class="roe">${labelKind} ~${c.roe}%${catKey==='stk'?` · 最新 ${c.roeLatest}%`:''}</div>`+
-      `<div class="src">${c.note} · 数据源: ${c.src}</div>`;
-    b.onclick = ()=>{
-      $('r2').value = c.roe;
-      document.querySelectorAll('.cbtn').forEach(x=>x.classList.remove('sel'));
-      b.classList.add('sel');
-      update();
-    };
-    cwrap.appendChild(b);
+document.querySelectorAll('.tab-mode').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-mode').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    curMode = b.dataset.mode;
+    update();
   });
 });
 
-// dr matrix table
+/* ======== 通胀联动 ======== */
+$('inflPreset').addEventListener('change',()=>{
+  $('inflCustomBox').style.display = $('inflPreset').value==='custom' ? '' : 'none';
+  update();
+});
+$('inflCustom').addEventListener('input',update);
+
+['p','add','maxYear'].forEach(id=>$(id).addEventListener('input',update));
+$('maxYear').addEventListener('change',update);
+
+/* ======== Δr × 时间矩阵 ======== */
 const TBASE = 0.08;
 const DRS = [0.001,0.005,0.01,0.02,0.03,0.05,0.10,0.15,0.20];
-const YEARS = [5,10,20,30,50,70];
+const YEARS_M = [5,10,20,30,50,70];
 const tb = document.querySelector('#dtable tbody');
 DRS.forEach(d=>{
   const r2 = TBASE+d;
   const tr = document.createElement('tr');
   const ratio = y => ((Math.pow(1+r2,y)/Math.pow(1+TBASE,y)-1)*100).toFixed(0)+'%';
   let cells = '<td>+'+(d*100).toFixed(1)+'%</td>';
-  YEARS.forEach(y=> cells += `<td class="pos">${ratio(y)}</td>`);
+  YEARS_M.forEach(y=> cells += `<td class="pos" style="color:#A32D2D">+${ratio(y)}</td>`);
   tr.innerHTML = cells;
   tb.appendChild(tr);
 });
 
-// init
-window._yScale = 'linear';
+/* ======== 初始化 ======== */
+buildCurvesUI();
+buildCompanies();
 buildChart(50);
 update();
 </script>
