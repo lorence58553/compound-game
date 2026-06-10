@@ -285,7 +285,9 @@ tr:hover td{background:#FAFAF7}
 
 <div style="grid-column:1/-1;font-size:11px;color:#888780;font-weight:600;margin-top:8px">🥇 避险/另类（10 年窗口）</div>
 <label class="hist-row"><input type="checkbox" class="hist-on" data-sym="GLD"> <span>🥇 黄金 (GLD ETF, 美元计价)</span> <a href="https://finance.yahoo.com/quote/GLD/" target="_blank" class="ds">📎</a></label>
-<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="TLT"> <span>📜 美 20 年长期国债 (TLT ETF)</span> <a href="https://finance.yahoo.com/quote/TLT/" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="TLT"> <span>📜 美 20 年长期国债 (TLT ETF, 久期~17)</span> <a href="https://finance.yahoo.com/quote/TLT/" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="IEF"> <span>📜 美 7-10 年中期国债 (IEF ETF, 久期~7.6)</span> <a href="https://finance.yahoo.com/quote/IEF/" target="_blank" class="ds">📎</a></label>
+<label class="hist-row"><input type="checkbox" class="hist-on" data-sym="IEI"> <span>📜 美 3-7 年中短债 (IEI ETF, 久期~4.5)</span> <a href="https://finance.yahoo.com/quote/IEI/" target="_blank" class="ds">📎</a></label>
 
 <div style="grid-column:1/-1;font-size:11px;color:#888780;font-weight:600;margin-top:8px">🏢 个股（教育用）</div>
 <label class="hist-row"><input type="checkbox" class="hist-on" data-sym="MOUTAI"> <span>🇨🇳 茅台 (sh600519, 后复权)</span> <a href="https://gu.qq.com/sh600519" target="_blank" class="ds">📎</a></label>
@@ -1280,14 +1282,14 @@ const HIST_COLOR = {
   MOUTAI:'#A32D2D', TENCENT:'#185FA5', APPLE:'#5F5E5A',
   SPX:'#1D7A4F', NASDAQ:'#534AB7', QQQ:'#1D9E75',
   CSI300:'#D85A30', HSI:'#854F0B',
-  GLD:'#C9A227', TLT:'#76B0E8',
+  GLD:'#C9A227', TLT:'#76B0E8', IEF:'#4A8DC9', IEI:'#2E6FA8',
   SPX_LONG:'#0F6E56', GOLD_LONG:'#B8860B'
 };
 const HIST_LABEL = {
   MOUTAI:'🇨🇳 茅台', TENCENT:'🇭🇰 腾讯', APPLE:'🇺🇸 苹果',
   SPX:'🇺🇸 标普500', NASDAQ:'🇺🇸 纳指综合', QQQ:'🇺🇸 QQQ',
   CSI300:'🇨🇳 沪深300', HSI:'🇭🇰 恒生',
-  GLD:'🥇 黄金GLD', TLT:'📜 美20Y国债',
+  GLD:'🥇 黄金GLD', TLT:'📜 美20Y国债', IEF:'📜 美7-10Y(IEF)', IEI:'📜 美3-7Y(IEI)',
   SPX_LONG:'🇺🇸 标普500长史(1990-)', GOLD_LONG:'🥇 黄金长史(1971-)'
 };
 const HIST_IS_PR = {SPX:true, NASDAQ:true, CSI300:true, HSI:true};
@@ -1323,7 +1325,7 @@ $('mcRerun').onclick = ()=>update();
 /* ======== 相关性热图 ======== */
 function buildCorrTable(){
   if(!HIST_DATA){ $('corrTable').innerHTML='<div style="color:#888780">数据加载中…</div>'; return; }
-  const symbols = ['SPX','NASDAQ','QQQ','CSI300','HSI','GLD','TLT','MOUTAI','TENCENT','APPLE'];
+  const symbols = ['SPX','NASDAQ','QQQ','CSI300','HSI','GLD','TLT','IEF','IEI','MOUTAI','TENCENT','APPLE'];
   const labels = symbols.map(s=>HIST_LABEL[s]||s);
   const monthlyRet = {};
   symbols.forEach(sym=>{
