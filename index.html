@@ -1503,7 +1503,7 @@ function updatePortfolio(){
   $('portfolioSummary').innerHTML = html;
 }
 
-document.querySelectorAll('.preset-btn').forEach(b=>b.onclick=()=>{
+document.querySelectorAll('.preset-btn[data-preset]').forEach(b=>b.onclick=()=>{
   const p = PRESETS[b.dataset.preset];
   ASSETS.forEach(a=> PORTFOLIO[a.key]=0);
   if(p) Object.keys(p).forEach(k=> PORTFOLIO[k]=p[k]);
