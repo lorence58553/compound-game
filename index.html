@@ -162,6 +162,51 @@ tr:hover td{background:#FAFAF7}
 </div>
 </details>
 
+<details class="sub-fold">
+<summary><span class="ftog">▼</span><span>🦢 黑天鹅模拟（在指定年份触发单年回撤）</span></summary>
+<div class="sub-fold-body">
+<div style="font-size:13px;color:#5F5E5A;margin-bottom:10px">在某些"危机年"，指数会跌 20%-50%。复利曲线遇到黑天鹅是这样恢复的：</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+<button class="preset-btn" data-bs="2008">+ 2008 全球金融危机 (-37%)</button>
+<button class="preset-btn" data-bs="2015">+ 2015 A股股灾 (-30%)</button>
+<button class="preset-btn" data-bs="2020">+ 2020 新冠 (-15%)</button>
+<button class="preset-btn" data-bs="2022">+ 2022 加息 (-20%)</button>
+<button class="preset-btn" data-bs="custom">+ 自定义</button>
+<button class="preset-btn" data-bs="clear" style="background:#FFE5E5">🗑️ 清空</button>
+</div>
+<div id="bsList" style="display:flex;flex-direction:column;gap:6px"></div>
+</div>
+</details>
+
+<details class="sub-fold">
+<summary><span class="ftog">▼</span><span>⏰ 情景对比：什么时候开始投资</span></summary>
+<div class="sub-fold-body">
+<div style="font-size:13px;color:#5F5E5A;margin-bottom:10px">用同一个年化（取自当前选中曲线），对比"现在不投 / 现在开始 / 5 年后再投 / 10 年后再投"——看晚开始的代价。</div>
+<label style="display:flex;align-items:center;gap:8px;font-size:13px"><input type="checkbox" id="scenarioOn"> 启用情景对比模式（其他曲线会被替换）</label>
+<div id="scenarioCfg" style="margin-top:10px;display:none">
+<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">
+<div>取年化 <span id="scrRateLbl" style="font-weight:600;color:#A32D2D">10%</span> 用于所有情景</div>
+<div>延迟年数 1 = <input type="number" id="scrD1" value="5" min="0" max="30" style="width:60px;padding:3px 6px;border:0.5px solid #B4B2A9;border-radius:4px"> 年</div>
+<div>延迟年数 2 = <input type="number" id="scrD2" value="10" min="0" max="30" style="width:60px;padding:3px 6px;border:0.5px solid #B4B2A9;border-radius:4px"> 年</div>
+</div>
+</div>
+</div>
+</details>
+
+<details class="sub-fold">
+<summary><span class="ftog">▼</span><span>📜 真实股价叠加（近 10 年月线，后复权）</span></summary>
+<div class="sub-fold-body">
+<div style="font-size:13px;color:#5F5E5A;margin-bottom:10px">把茅台/腾讯/苹果/标普 500 近 10 年的真实月线"等比缩放"叠加到主图——你会看到<b>真实路径不是平滑曲线，但长期趋势仍然向上</b>。</div>
+<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px">
+<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="MOUTAI"> 🇨🇳 茅台 (sh600519, 后复权)</label>
+<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="TENCENT"> 🇭🇰 腾讯 (00700, 后复权)</label>
+<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="APPLE"> 🇺🇸 苹果 (AAPL, 后复权)</label>
+<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="SPX"> 🇺🇸 标普 500</label>
+</div>
+<div class="note" style="margin-top:8px">真实数据等比缩放到与本金 ¥10 万起点重合，仅做"路径形态对比"用，不代表投资回报。</div>
+</div>
+</details>
+
 <details id="companiesDetails" class="sub-fold" style="margin-bottom:14px">
 <summary><span class="ftog">▶</span><span>📚 选标的库（48 个全球标的，按地区/类型分组）</span><span style="margin-left:auto;font-size:12px;color:#888780">应用到当前选中的曲线</span></summary>
 <div class="sub-fold-body">
@@ -500,9 +545,18 @@ function buildChart(maxY){
   });
 }
 
-function fv(p,r,years,addPerYear){
+function fv(p,r,years,addPerYear,blackSwans){
   const arr=[]; let v=p;
-  for(let y=0;y<=years;y++){ arr.push(v); v=v*(1+r)+(addPerYear||0); }
+  const bsMap = {};
+  if(blackSwans) blackSwans.forEach(b=>{ bsMap[b.year] = (bsMap[b.year]||0) + (b.dropPct||0); });
+  for(let y=0;y<=years;y++){
+    arr.push(v);
+    let yearReturn = r;
+    if(bsMap[y+1]){ // 进入第y+1年时叠加回撤
+      yearReturn = (1+r) * (1 - Math.abs(bsMap[y+1])/100) - 1;
+    }
+    v = v*(1+yearReturn) + (addPerYear||0);
+  }
   return arr;
 }
 function deflate(arr,inflRate){
@@ -521,14 +575,44 @@ function update(){
 
   // 计算每条曲线
   const datasets = [];
-  const enabled = CURVES.filter(c=>c.enabled);
+  let enabled = CURVES.filter(c=>c.enabled);
+
+  // === 情景对比模式：覆盖 enabled 曲线 ===
+  if(SCENARIO_ON){
+    const baseRate = enabled[0]?enabled[0].rate:10;
+    $('scrRateLbl').textContent = baseRate.toFixed(1)+'%';
+    const d1 = +$('scrD1').value || 5;
+    const d2 = +$('scrD2').value || 10;
+    enabled = [
+      {label:'💰 现在不投（'+(inflRate*100).toFixed(1)+'% 通胀侵蚀）', rate: -inflRate*100, color:'#888780'},
+      {label:'🚀 现在开始（'+baseRate.toFixed(1)+'%）', rate: baseRate, color:'#A32D2D'},
+      {label:'⏳ '+d1+' 年后开始', rate: baseRate, color:'#E8A33C', delay:d1},
+      {label:'🐢 '+d2+' 年后开始', rate: baseRate, color:'#5F5E5A', delay:d2}
+    ];
+  }
+
   enabled.forEach(c=>{
     const r = c.rate/100;
-    const nominal = fv(p,r,maxY,add);
+    let nominal;
+    if(c.delay && c.delay>0){
+      // 前 c.delay 年只放本金（按通胀贴现等价不动），从第 delay 年后开始复利
+      nominal = [];
+      for(let y=0;y<=maxY;y++){
+        if(y<c.delay) nominal.push(p);
+        else {
+          const yr = y-c.delay;
+          // 用 fv 算从 delay 年开始的曲线
+          if(yr===0) nominal.push(p);
+          else nominal.push(nominal[nominal.length-1]*(1+r) + (add||0));
+        }
+      }
+    } else {
+      nominal = fv(p,r,maxY,add,BLACK_SWANS);
+    }
     const real = deflate(nominal,inflRate);
     if(curMode==='nominal' || curMode==='both'){
       datasets.push({
-        label: c.label+' (名义 '+c.rate.toFixed(1)+'%)',
+        label: c.label+(c.rate>=0?' (名义 '+c.rate.toFixed(1)+'%)':''),
         data: nominal,
         borderColor: c.color,
         backgroundColor: c.color+'10',
@@ -538,7 +622,7 @@ function update(){
     }
     if(curMode==='real' || curMode==='both'){
       datasets.push({
-        label: c.label+' (真实 ≈'+(c.rate-inflRate*100).toFixed(1)+'%)',
+        label: c.label+' (真实购买力)',
         data: real,
         borderColor: c.color,
         backgroundColor: c.color+'08',
@@ -559,6 +643,33 @@ function update(){
     });
   }
 
+  // === 真实股价历史叠加（等比缩放到本金 p）===
+  if(HIST_DATA){
+    Object.keys(HIST_ON).forEach(sym=>{
+      if(!HIST_ON[sym] || !HIST_DATA[sym]) return;
+      const rows = HIST_DATA[sym];
+      const startPrice = rows[0][1];
+      const months = Math.min(rows.length, (maxY+1)*12);
+      // 取 startPrice 缩放到 p
+      const scale = p/startPrice;
+      // 把月线下采样为年线（每 12 个月取一个）
+      const data = [];
+      for(let y=0; y<=maxY; y++){
+        const idx = y*12;
+        if(idx<rows.length) data.push(rows[idx][1]*scale);
+        else data.push(null);
+      }
+      datasets.push({
+        label: HIST_LABEL[sym]+'（10年实际路径）',
+        data: data,
+        borderColor: HIST_COLOR[sym],
+        backgroundColor: HIST_COLOR[sym]+'05',
+        borderWidth: 2.5, pointRadius:3, pointStyle:'rectRot', tension:0.1,
+        borderDash:[2,3], spanGaps:false
+      });
+    });
+  }
+
   chart.data.datasets = datasets;
   chart.update('none');
 
@@ -568,7 +679,7 @@ function update(){
   const baseLine = enabled[0];
   if(!baseLine){ wrap.innerHTML = '<div class="m"><div class="lbl">至少启用一条曲线</div></div>'; $('summary').innerHTML=''; renderLegend(datasets); return; }
   const baseR = baseLine.rate/100;
-  const baseArr = fv(p,baseR,maxY,add);
+  const baseArr = fv(p,baseR,maxY,add,BLACK_SWANS);
   const ms = [10,20,30,50,70].filter(y=>y<=maxY);
   ms.forEach(y=>{
     const d = document.createElement('div');
@@ -581,20 +692,22 @@ function update(){
   });
 
   // summary
-  let s = '<b>通胀设定</b>：'+(inflRate*100).toFixed(1)+'%/年。';
-  s += '<br><b>启用曲线</b>：';
+  let s = '<b>通胀设定</b>：'+(inflRate*100).toFixed(1)+'%/年';
+  if(BLACK_SWANS.length>0) s += '；🦢 已加 '+BLACK_SWANS.length+' 个黑天鹅事件';
+  if(SCENARIO_ON) s += '；⏰ 情景对比模式 ON';
+  s += '。<br><b>启用曲线</b>：';
   s += enabled.map(c=>{
-    const arr = fv(p,c.rate/100,maxY,add);
+    const arr = c.delay&&c.delay>0 ? (function(){const a=[];for(let y=0;y<=maxY;y++){if(y<c.delay)a.push(p);else{const yr=y-c.delay;if(yr===0)a.push(p);else a.push(a[a.length-1]*(1+c.rate/100)+(add||0));}}return a;})() : fv(p,c.rate/100,maxY,add,BLACK_SWANS);
     const last = arr[maxY];
     const realLast = last/Math.pow(1+inflRate,maxY);
-    return `${c.label} ${c.rate.toFixed(1)}% → ${maxY}年名义 ${fmt(last)} / 真实 ${fmt(realLast)}`;
+    return `${c.label} → ${maxY}年名义 ${fmt(last)} / 真实 ${fmt(realLast)}`;
   }).join(' ｜ ');
 
   // 比较：基准 vs 其他
-  if(enabled.length>1){
+  if(enabled.length>1 && !SCENARIO_ON){
     s += '<br><b>vs 基准</b>：';
     s += enabled.slice(1).map(c=>{
-      const a = fv(p,c.rate/100,maxY,add)[maxY];
+      const a = (c.delay&&c.delay>0 ? (function(){const arr=[];for(let y=0;y<=maxY;y++){if(y<c.delay)arr.push(p);else{const yr=y-c.delay;if(yr===0)arr.push(p);else arr.push(arr[arr.length-1]*(1+c.rate/100)+(add||0));}}return arr;})() : fv(p,c.rate/100,maxY,add,BLACK_SWANS))[maxY];
       const b = baseArr[maxY];
       const ratio = b>0?((a/b-1)*100).toFixed(0)+'%':'—';
       return c.label+' '+(a>b?'+':'')+ratio;
@@ -644,6 +757,69 @@ function buildCompanies(){
   });
 }
 
+/* ======== 黑天鹅事件 ======== */
+let BLACK_SWANS = []; // [{year:5, dropPct:30, label:'2008'}]
+const BS_PRESETS = {
+  '2008':{dropPct:37, label:'2008 全球金融危机'},
+  '2015':{dropPct:30, label:'2015 A股股灾'},
+  '2020':{dropPct:15, label:'2020 新冠'},
+  '2022':{dropPct:20, label:'2022 加息'},
+  'custom':{dropPct:25, label:'自定义事件'}
+};
+function renderBs(){
+  const wrap = $('bsList');
+  wrap.innerHTML = '';
+  BLACK_SWANS.forEach((b,i)=>{
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:8px;align-items:center;padding:8px 12px;background:#FFE8E5;border-left:3px solid #A32D2D;border-radius:6px;font-size:13px';
+    row.innerHTML = `
+      <span style="font-weight:500;flex:0 0 auto">🦢 ${b.label}</span>
+      <span style="color:#5F5E5A">第</span>
+      <input type="number" data-idx="${i}" data-key="year" value="${b.year}" min="1" max="70" style="width:60px;padding:3px 6px;border:0.5px solid #B4B2A9;border-radius:4px">
+      <span style="color:#5F5E5A">年，跌</span>
+      <input type="number" data-idx="${i}" data-key="dropPct" value="${b.dropPct}" min="0" max="90" style="width:60px;padding:3px 6px;border:0.5px solid #B4B2A9;border-radius:4px">
+      <span style="color:#5F5E5A">%</span>
+      <button data-rm="${i}" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#A32D2D;font-size:16px">✕</button>
+    `;
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll('input').forEach(el=>el.oninput=e=>{
+    BLACK_SWANS[+e.target.dataset.idx][e.target.dataset.key] = +e.target.value;
+    update();
+  });
+  wrap.querySelectorAll('button[data-rm]').forEach(el=>el.onclick=e=>{
+    BLACK_SWANS.splice(+e.target.dataset.rm, 1); renderBs(); update();
+  });
+}
+document.querySelectorAll('button[data-bs]').forEach(b=>b.onclick=()=>{
+  const k = b.dataset.bs;
+  if(k==='clear'){ BLACK_SWANS=[]; renderBs(); update(); return; }
+  const preset = BS_PRESETS[k];
+  if(!preset) return;
+  BLACK_SWANS.push({year: Math.min(5+BLACK_SWANS.length*7, 30), dropPct: preset.dropPct, label: preset.label});
+  renderBs(); update();
+});
+renderBs();
+
+/* ======== 情景对比 ======== */
+let SCENARIO_ON = false;
+$('scenarioOn').addEventListener('change', e=>{
+  SCENARIO_ON = e.target.checked;
+  $('scenarioCfg').style.display = SCENARIO_ON?'':'none';
+  update();
+});
+$('scrD1').addEventListener('input',update);
+$('scrD2').addEventListener('input',update);
+
+/* ======== 真实股价数据 ======== */
+let HIST_DATA = null;
+fetch('./kline_data.json').then(r=>r.json()).then(d=>{ HIST_DATA = d; }).catch(()=>{});
+const HIST_COLOR = {MOUTAI:'#A32D2D', TENCENT:'#185FA5', APPLE:'#5F5E5A', SPX:'#1D7A4F'};
+const HIST_LABEL = {MOUTAI:'🇨🇳 茅台真实', TENCENT:'🇭🇰 腾讯真实', APPLE:'🇺🇸 苹果真实', SPX:'🇺🇸 标普真实'};
+let HIST_ON = {MOUTAI:false, TENCENT:false, APPLE:false, SPX:false};
+document.querySelectorAll('.hist-on').forEach(el=>el.onchange=e=>{
+  HIST_ON[e.target.dataset.sym] = e.target.checked; update();
+});
 /* ======== 模式 / 刻度切换 ======== */
 const EXPLAIN = {
   linear:'<b>① 指数样子 · 线性 Y 轴</b><br>Y 轴每格代表"<b>等量金钱</b>"。复利的本质是每年按百分比增长，曲线<b>越往后越陡</b>，前 20 年贴地，第 30-50 年突然起飞——经典的<b>曲棍球棒</b>。<br>👉 用这个视图：<b>给孩子和家人</b>看，让他们感受时间的爆发力。',
