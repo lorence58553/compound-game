@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>复利的秘密 · 一个 0.1% 在 30 年里的故事</title>
+<title>复利的秘密 · 一个 0.1% 在 70 年里的故事</title>
 <meta name="description" content="可交互复利模拟器：用真实公司 ROE 体会时间的魔法。免费、可分享、可教孩子。">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-serif;color:#2C2C2A;background:#FAFAF7;line-height:1.6;font-size:14px}
-.wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+.wrap{max-width:1120px;margin:0 auto;padding:32px 20px 80px}
 .hero{text-align:center;padding:32px 0 40px}
 .hero h1{font-size:32px;font-weight:500;letter-spacing:-0.5px;margin-bottom:12px}
 .hero .sub{color:#5F5E5A;font-size:15px;max-width:620px;margin:0 auto}
@@ -22,30 +22,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",sans-
 .ctrl input[type=range]{width:100%;accent-color:#185FA5}
 .val{color:#185FA5;font-weight:500;margin-left:6px}
 .val.r2{color:#A32D2D}
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-.m{background:#F1EFE8;border-radius:8px;padding:14px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px}
+.m{background:#F1EFE8;border-radius:8px;padding:12px}
 .m .lbl{font-size:11px;color:#5F5E5A}
-.m .v{font-size:20px;font-weight:500;margin-top:4px}
-.m .yr{font-size:11px;color:#888780;margin-top:2px}
-.chart-box{position:relative;width:100%;height:360px}
+.m .v{font-size:18px;font-weight:500;margin-top:3px}
+.m .yr{font-size:10px;color:#888780;margin-top:2px}
+.chart-box{position:relative;width:100%;height:400px}
 .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:12px;color:#5F5E5A;margin-top:8px}
 .legend span{display:flex;align-items:center;gap:6px}
 .dot{width:10px;height:10px;border-radius:2px}
 .summary{margin-top:14px;padding:14px;background:#E6F1FB;border-radius:8px;font-size:13px;color:#0C447C}
 .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.tab{padding:6px 14px;border:0.5px solid #B4B2A9;border-radius:99px;background:#fff;cursor:pointer;font-size:13px}
+.tab{padding:6px 14px;border:0.5px solid #B4B2A9;border-radius:99px;background:#fff;cursor:pointer;font-size:13px;transition:all .15s}
 .tab.active{background:#185FA5;color:#fff;border-color:#185FA5}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:right;padding:10px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{text-align:right;padding:8px 6px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
 th:first-child,td:first-child{text-align:left}
-th{font-weight:500;color:#5F5E5A;background:#F8F7F2}
+th{font-weight:500;color:#5F5E5A;background:#F8F7F2;font-size:11px}
 tr:hover td{background:#FAFAF7}
 .pos{color:#A32D2D;font-weight:500}
-.companies{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:8px}
-.cbtn{text-align:left;padding:10px 12px;border:0.5px solid rgba(0,0,0,0.12);border-radius:8px;background:#fff;cursor:pointer;font-size:13px}
-.cbtn:hover{border-color:#185FA5}
+.companies{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:8px}
+.cbtn{text-align:left;padding:10px 12px;border:0.5px solid rgba(0,0,0,0.12);border-radius:8px;background:#fff;cursor:pointer;font-size:13px;transition:all .15s}
+.cbtn:hover{border-color:#185FA5;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.cbtn.sel{border-color:#A32D2D;background:#FFF8F7}
 .cbtn .name{font-weight:500}
 .cbtn .roe{color:#A32D2D;font-size:12px;margin-top:2px}
+.cbtn .src{color:#888780;font-size:11px;margin-top:1px}
 .note{font-size:12px;color:#888780;margin-top:8px;line-height:1.7}
 .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#F1EFE8;padding:1px 6px;border-radius:4px;font-size:12px}
 .foot{text-align:center;color:#888780;font-size:12px;margin-top:40px;line-height:1.8}
@@ -55,7 +57,14 @@ tr:hover td{background:#FAFAF7}
 .story .it{background:#FAFAF7;border:0.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:14px}
 .story .it .h{font-weight:500;margin-bottom:6px}
 .story .it .p{color:#5F5E5A;font-size:13px}
-@media(max-width:640px){.hero h1{font-size:24px}.card{padding:18px}}
+.tooltip-custom{position:absolute;background:rgba(255,255,255,0.97);border:1px solid #B4B2A9;border-radius:8px;padding:12px;font-size:12px;pointer-events:none;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.1);min-width:200px}
+.tooltip-custom .tt-year{font-weight:600;font-size:14px;margin-bottom:6px}
+.tooltip-custom .tt-row{display:flex;justify-content:space-between;padding:2px 0}
+.tooltip-custom .tt-label{color:#5F5E5A}
+.tooltip-custom .tt-val{font-weight:500}
+.tooltip-custom .tt-gap{color:#A32D2D;font-weight:600;border-top:1px solid #eee;margin-top:4px;padding-top:4px}
+.data-date{font-size:11px;color:#888780;font-style:italic}
+@media(max-width:640px){.hero h1{font-size:24px}.card{padding:18px}.chart-box{height:300px}}
 </style>
 </head>
 <body>
@@ -69,7 +78,7 @@ tr:hover td{background:#FAFAF7}
 
 <section class="card">
 <h2>一、动手玩：复利模拟器</h2>
-<p class="desc">本金 + 两条年化收益曲线，调一调，看看 30 年差多少。</p>
+<p class="desc">本金 + 两条年化收益曲线，调一调，看看 70 年差多少。</p>
 
 <div class="controls">
 <div class="ctrl">
@@ -82,41 +91,49 @@ tr:hover td{background:#FAFAF7}
 </div>
 <div class="ctrl">
 <label>基准年化 r₁ <span id="r1lbl" class="val">8.0%</span></label>
-<input id="r1" type="range" min="0" max="20" step="0.1" value="8">
+<input id="r1" type="range" min="0" max="25" step="0.1" value="8">
 </div>
 <div class="ctrl">
 <label>对比年化 r₂ <span id="r2lbl" class="val r2">15.0%</span></label>
-<input id="r2" type="range" min="0" max="35" step="0.1" value="15">
+<input id="r2" type="range" min="0" max="45" step="0.1" value="15">
+</div>
+</div>
+
+<div class="controls" style="margin-bottom:6px">
+<div class="ctrl" style="max-width:160px">
+<label>最大年限</label>
+<select id="maxYear">
+<option value="30">30 年</option>
+<option value="40">40 年</option>
+<option value="50" selected>50 年</option>
+<option value="60">60 年</option>
+<option value="70">70 年</option>
+</select>
 </div>
 </div>
 
 <div style="margin-bottom:14px">
-<div class="note" style="margin-bottom:8px;color:#5F5E5A">点一家公司，把对比年化 r₂ 设成它的长期 ROE 中枢：</div>
+<div class="note" style="margin-bottom:8px;color:#5F5E5A">点一家公司，把对比年化 r₂ 设成它的长期 ROE 中枢（数据来源：最新年报/公开披露）：</div>
 <div id="companies" class="companies"></div>
 </div>
 
-<div class="metrics">
-<div class="m"><div class="lbl">5 年差距</div><div class="v" id="g5">—</div><div class="yr">r₂ 比 r₁ 多赚</div></div>
-<div class="m"><div class="lbl">10 年差距</div><div class="v" id="g10">—</div><div class="yr">r₂ 比 r₁ 多赚</div></div>
-<div class="m"><div class="lbl">20 年差距</div><div class="v" id="g20">—</div><div class="yr">r₂ 比 r₁ 多赚</div></div>
-<div class="m"><div class="lbl">30 年差距</div><div class="v" id="g30">—</div><div class="yr">r₂ 比 r₁ 多赚</div></div>
-</div>
+<div class="metrics" id="metricsWrap"></div>
 
 <div class="chart-box"><canvas id="chart" role="img" aria-label="复利曲线对比">复利曲线</canvas></div>
 <div class="legend">
 <span><span class="dot" style="background:#185FA5"></span>基准 r₁</span>
 <span><span class="dot" style="background:#A32D2D"></span>对比 r₂</span>
-<span><span class="dot" style="background:#888780"></span>差额</span>
+<span><span class="dot" style="background:rgba(163,45,45,0.15)"></span>差额区域</span>
 </div>
 <div id="summary" class="summary"></div>
 </section>
 
 <section class="card">
 <h2>二、一图看懂：Δr × 时间矩阵</h2>
-<p class="desc">基准 8%，每提高一点收益率，在 5/10/20/30 年后会"多"出多少倍？</p>
+<p class="desc">基准 8%，每提高一点收益率，在 5/10/20/30/50/70 年后会"多"出多少倍？</p>
 <div style="overflow-x:auto">
 <table id="dtable">
-<thead><tr><th>每年多赚</th><th>5 年</th><th>10 年</th><th>20 年</th><th>30 年</th></tr></thead>
+<thead><tr><th>每年多赚</th><th>5 年</th><th>10 年</th><th>20 年</th><th>30 年</th><th>50 年</th><th>70 年</th></tr></thead>
 <tbody></tbody>
 </table>
 </div>
@@ -161,7 +178,7 @@ tr:hover td{background:#FAFAF7}
 
 <section class="card">
 <h2>五、温馨提醒</h2>
-<p class="note">长期 ROE 中枢只是"复利速度"的近似上限——实际股东回报还要看：① 估值买卖点；② 股利再投；③ 公司是否长期保留护城河。30% ROE 公司不等于你能拿到 30% 年化，但它代表了一个值得去理解的"复利源头"。<br>本工具仅作教育用途，不构成投资建议。数据为公开披露口径整理，可能与实时披露存在差异。</p>
+<p class="note">长期 ROE 中枢只是"复利速度"的近似上限——实际股东回报还要看：① 估值买卖点；② 股利再投；③ 公司是否长期保留护城河。苹果 ROE 171% 因大量回购致净资产极低，"正常化"后约 30-35%。<br>本工具仅作教育用途，不构成投资建议。公司 ROE 数据来源于最新年报/公开披露（截至 2025 财年），可能与实时披露存在差异。</p>
 </section>
 
 <footer class="foot">
@@ -173,52 +190,83 @@ tr:hover td{background:#FAFAF7}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+/* ======== 真实 ROE 数据（来源：最新年报/公开披露） ======== */
 const COMPANIES = [
-  {code:'600519',name:'贵州茅台',roe:30,note:'近10年 ROE 中枢 ~30%'},
-  {code:'00700',name:'腾讯控股',roe:22,note:'2014-2024 ROE ~20-25%'},
-  {code:'BABA',name:'阿里巴巴',roe:12,note:'近5年 ROE 回落至 ~10-15%'},
-  {code:'BIDU',name:'字节(未上市)',roe:25,note:'估算，未公开披露'},
-  {code:'AAPL',name:'苹果',roe:35,note:'剔除回购影响后 ~30-40%'},
-  {code:'MSFT',name:'微软',roe:35,note:'近5年 ROE ~35-40%'},
-  {code:'GOOGL',name:'谷歌',roe:25,note:'近10年 ROE ~22-28%'},
-  {code:'META',name:'Meta',roe:28,note:'近5年 ROE ~25-30%'},
-  {code:'BRK.B',name:'伯克希尔',roe:11,note:'巴菲特 60 年 ~19.8% 年化'},
-  {code:'CSI300',name:'沪深300指数',roe:9,note:'长期 ROE+股利再投 ~8-10%'},
-  {code:'SPX',name:'标普500',roe:10,note:'1957-2024 含股利 ~10%'},
-  {code:'CASH',name:'银行定存',roe:2,note:'5年期 ~2-3%'}
+  {code:'600519',name:'贵州茅台',roe:31,roeLatest:32.5,note:'近5年 ROE 29.9%→36.0%→34.2%→32.5%，中枢 ~31%',src:'2025年报',flag:'🇨🇳'},
+  {code:'00700',name:'腾讯控股',roe:20,roeLatest:21.4,note:'近3年 ROE 15.0%→21.6%→21.4%，中枢 ~20%',src:'2025年报',flag:'🇭🇰'},
+  {code:'AAPL',name:'苹果 Apple',roe:33,roeLatest:171.4,note:'FY2025 ROE 171%（回购致净资产极低），正常化 ~30-35%',src:'FY2025年报',flag:'🇺🇸'},
+  {code:'MSFT',name:'微软 Microsoft',roe:33,roeLatest:33.3,note:'FY2025 ROE 33.3%，近5年 ~33-38%',src:'FY2025年报',flag:'🇺🇸'},
+  {code:'GOOGL',name:'谷歌 Alphabet',roe:34,roeLatest:35.7,note:'2025年报 ROE 35.7%，2024年 32.9%，中枢 ~34%',src:'2025年报',flag:'🇺🇸'},
+  {code:'META',name:'Meta Platforms',roe:33,roeLatest:30.2,note:'2025年报 ROE 30.2%，2024年 37.1%，中枢 ~33%',src:'2025年报',flag:'🇺🇸'},
+  {code:'BABA',name:'阿里巴巴',roe:12,roeLatest:13.0,note:'FY2025 ROE 13.0%，FY2026 ROE 10.2%，中枢 ~12%',src:'FY2025年报',flag:'🇺🇸'},
+  {code:'BRK.B',name:'伯克希尔',roe:15,roeLatest:15.0,note:'巴菲特 60 年年化 ~19.8%，近年 ROE ~15%',src:'公开数据',flag:'🇺🇸'},
+  {code:'CSI300',name:'沪深300指数',roe:9,roeLatest:9,note:'长期 ROE+股利再投 ~8-10%',src:'Wind',flag:'🇨🇳'},
+  {code:'SPX',name:'标普500',roe:10,roeLatest:10,note:'1957-2024 含股利 ~10%',src:'公开数据',flag:'🇺🇸'},
+  {code:'NVDA',name:'英伟达 NVIDIA',roe:42,roeLatest:115,note:'FY2025 ROE 115%（AI爆发），正常化 ~40-50%',src:'FY2025年报',flag:'🇺🇸'},
+  {code:'CASH',name:'银行定存',roe:2,roeLatest:2,note:'5年期 ~2%',src:'央行基准',flag:'💰'}
 ];
 
 const fmt = n => {
+  if(n>=1e12) return '¥'+(n/1e12).toFixed(2)+'万亿';
   if(n>=1e8) return '¥'+(n/1e8).toFixed(2)+'亿';
   if(n>=1e4) return '¥'+(n/1e4).toFixed(1)+'万';
   return '¥'+Math.round(n).toLocaleString();
 };
 const pct = n => (n*100).toFixed(0)+'%';
-
 const $ = id => document.getElementById(id);
 const ctx = $('chart');
-const years = Array.from({length:31},(_,i)=>i);
 
-const chart = new Chart(ctx,{
-  type:'line',
-  data:{labels:years,datasets:[
-    {label:'r1',data:[],borderColor:'#185FA5',backgroundColor:'#185FA5',borderWidth:2.5,pointRadius:0,tension:0.1},
-    {label:'r2',data:[],borderColor:'#A32D2D',backgroundColor:'#A32D2D',borderWidth:2.5,pointRadius:0,tension:0.1},
-    {label:'gap',data:[],borderColor:'#888780',backgroundColor:'#888780',borderWidth:1.5,pointRadius:0,borderDash:[5,5],tension:0.1}
-  ]},
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:c=>{
-        const m={r1:'基准',r2:'对比',gap:'差额'};
-        return (m[c.dataset.label]||c.dataset.label)+': '+fmt(c.parsed.y);
-      },title:c=>c[0].label+' 年'}}},
-    scales:{
-      y:{ticks:{callback:v=>fmt(v),font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}},
-      x:{title:{display:true,text:'年',font:{size:11}},ticks:{font:{size:11}},grid:{display:false}}
+let chart = null;
+
+function buildChart(maxY){
+  const years = Array.from({length:maxY+1},(_,i)=>i);
+  if(chart) chart.destroy();
+  chart = new Chart(ctx,{
+    type:'line',
+    data:{labels:years,datasets:[
+      {label:'r1',data:[],borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.04)',borderWidth:2.5,pointRadius:0,tension:0.1,fill:false},
+      {label:'r2',data:[],borderColor:'#A32D2D',backgroundColor:'rgba(163,45,45,0.04)',borderWidth:2.5,pointRadius:0,tension:0.1,fill:false},
+      {label:'gap',data:[],borderColor:'transparent',backgroundColor:'rgba(163,45,45,0.10)',borderWidth:0,pointRadius:0,tension:0.1,fill:{target:'r1',above:'rgba(163,45,45,0.10)'}}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{legend:{display:false},
+        tooltip:{
+          backgroundColor:'rgba(255,255,255,0.97)',
+          titleColor:'#2C2C2A',
+          bodyColor:'#2C2C2A',
+          borderColor:'#B4B2A9',
+          borderWidth:1,
+          cornerRadius:8,
+          padding:12,
+          titleFont:{size:14,weight:'600'},
+          bodyFont:{size:12},
+          callbacks:{
+            title:c=>c[0].label+' 年',
+            label:c=>{
+              const m={r1:'基准 r₁',r2:'对比 r₂',gap:'差额'};
+              if(c.dataset.label==='gap') return '';
+              return (m[c.dataset.label]||c.dataset.label)+': '+fmt(c.parsed.y);
+            },
+            afterBody:c=>{
+              const r1v=c.find(x=>x.dataset.label==='r1');
+              const r2v=c.find(x=>x.dataset.label==='r2');
+              if(!r1v||!r2v) return '';
+              const gap=r2v.parsed.y-r1v.parsed.y;
+              const pctGap=r1v.parsed.y>0?((gap/r1v.parsed.y)*100).toFixed(0)+'%':'—';
+              return ['────────────','差额: '+fmt(gap)+' ('+pctGap+')'];
+            }
+          }
+        }
+      },
+      scales:{
+        y:{type:'logarithmic',ticks:{callback:v=>fmt(v),font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}},
+        x:{title:{display:true,text:'年',font:{size:11}},ticks:{font:{size:11},maxTicksLimit:15},grid:{display:false}}
+      }
     }
-  }
-});
+  });
+}
 
 function fv(p,r,years,addPerYear){
   const arr=[];
@@ -235,11 +283,14 @@ function update(){
   const add = +$('add').value || 0;
   const r1 = +$('r1').value/100;
   const r2 = +$('r2').value/100;
+  const maxY = +$('maxYear').value;
   $('r1lbl').textContent = (r1*100).toFixed(1)+'%';
   $('r2lbl').textContent = (r2*100).toFixed(1)+'%';
 
-  const a1 = fv(p,r1,30,add);
-  const a2 = fv(p,r2,30,add);
+  if(!chart || chart.data.labels.length !== maxY+1) buildChart(maxY);
+
+  const a1 = fv(p,r1,maxY,add);
+  const a2 = fv(p,r2,maxY,add);
   const ag = a2.map((v,i)=>v-a1[i]);
 
   chart.data.datasets[0].data = a1;
@@ -247,51 +298,70 @@ function update(){
   chart.data.datasets[2].data = ag;
   chart.update('none');
 
-  const ratio = y => a1[y]>0 ? ((a2[y]/a1[y]-1)*100).toFixed(0)+'%' : '—';
-  $('g5').textContent = ratio(5);
-  $('g10').textContent = ratio(10);
-  $('g20').textContent = ratio(20);
-  $('g30').textContent = ratio(30);
+  // metrics
+  const milestones = [5,10,20,30,40,50,60,70].filter(y=>y<=maxY);
+  const wrap = $('metricsWrap');
+  wrap.innerHTML = '';
+  milestones.forEach(y=>{
+    const ratio = a1[y]>0 ? ((a2[y]/a1[y]-1)*100).toFixed(0)+'%' : '—';
+    const d = document.createElement('div');
+    d.className='m';
+    d.innerHTML=`<div class="lbl">${y} 年差距</div><div class="v">${ratio}</div><div class="yr">r₂ 比 r₁ 多赚</div>`;
+    wrap.appendChild(d);
+  });
 
-  $('summary').innerHTML =
-    '<b>20 年</b>：基准 '+fmt(a1[20])+' / 对比 '+fmt(a2[20])+'，相差 '+fmt(a2[20]-a1[20])+'。'+
-    '<br><b>30 年</b>：基准 '+fmt(a1[30])+' / 对比 '+fmt(a2[30])+'，相差 '+fmt(a2[30]-a1[30])+'。'+
-    '<br>每年看似只多 '+((r2-r1)*100).toFixed(1)+'%，30 年后却拉开 '+((a2[30]/a1[30]-1)*100).toFixed(0)+'% 的距离。';
+  // summary
+  const s20 = 20<=maxY, s30 = 30<=maxY, s50 = 50<=maxY, s70 = 70<=maxY;
+  let html = '';
+  if(s20) html += '<b>20 年</b>：基准 '+fmt(a1[20])+' / 对比 '+fmt(a2[20])+'，相差 '+fmt(a2[20]-a1[20])+'。';
+  if(s30) html += '<br><b>30 年</b>：基准 '+fmt(a1[30])+' / 对比 '+fmt(a2[30])+'，相差 '+fmt(a2[30]-a1[30])+'。';
+  if(s50) html += '<br><b>50 年</b>：基准 '+fmt(a1[50])+' / 对比 '+fmt(a2[50])+'，相差 '+fmt(a2[50]-a1[50])+'。';
+  if(s70) html += '<br><b>70 年</b>：基准 '+fmt(a1[70])+' / 对比 '+fmt(a2[70])+'，相差 '+fmt(a2[70]-a1[70])+'。';
+  html += '<br>每年看似只多 '+((r2-r1)*100).toFixed(1)+'%';
+  if(s30) html += '，30 年后拉开 '+((a2[30]/a1[30]-1)*100).toFixed(0)+'%';
+  if(s50) html += '，50 年后拉开 '+((a2[50]/a1[50]-1)*100).toFixed(0)+'%';
+  if(s70) html += '，70 年后拉开 '+((a2[70]/a1[70]-1)*100).toFixed(0)+'%';
+  html += ' 的距离。';
+  $('summary').innerHTML = html;
 }
 
-['p','add','r1','r2'].forEach(id=>$(id).addEventListener('input',update));
+['p','add','r1','r2','maxYear'].forEach(id=>$(id).addEventListener('input',update));
+$('maxYear').addEventListener('change',update);
 
 // company buttons
 const cwrap = $('companies');
 COMPANIES.forEach(c=>{
   const b = document.createElement('button');
   b.className='cbtn';
-  b.innerHTML = '<div class="name">'+c.name+' <span style="color:#888780;font-size:12px">'+c.code+'</span></div><div class="roe">长期 ROE / 年化 ~'+c.roe+'% · '+c.note+'</div>';
+  b.innerHTML = `<div class="name">${c.flag} ${c.name} <span style="color:#888780;font-size:11px">${c.code}</span></div>`+
+    `<div class="roe">长期 ROE 中枢 ~${c.roe}% · 最新 ${c.roeLatest}%</div>`+
+    `<div class="src">${c.note} · 数据源: ${c.src}</div>`;
   b.onclick = ()=>{
     $('r2').value = c.roe;
+    document.querySelectorAll('.cbtn').forEach(x=>x.classList.remove('sel'));
+    b.classList.add('sel');
     update();
-    document.querySelectorAll('.cbtn').forEach(x=>x.style.borderColor='');
-    b.style.borderColor='#A32D2D';
   };
   cwrap.appendChild(b);
 });
 
 // dr matrix table
 const TBASE = 0.08;
-const DRS = [0.001,0.005,0.01,0.02,0.03,0.05,0.10];
+const DRS = [0.001,0.005,0.01,0.02,0.03,0.05,0.10,0.15,0.20];
+const YEARS = [5,10,20,30,50,70];
 const tb = document.querySelector('#dtable tbody');
 DRS.forEach(d=>{
   const r2 = TBASE+d;
   const tr = document.createElement('tr');
   const ratio = y => ((Math.pow(1+r2,y)/Math.pow(1+TBASE,y)-1)*100).toFixed(0)+'%';
-  tr.innerHTML = '<td>+'+(d*100).toFixed(1)+'%</td>'+
-    '<td class="pos">'+ratio(5)+'</td>'+
-    '<td class="pos">'+ratio(10)+'</td>'+
-    '<td class="pos">'+ratio(20)+'</td>'+
-    '<td class="pos">'+ratio(30)+'</td>';
+  let cells = '<td>+'+(d*100).toFixed(1)+'%</td>';
+  YEARS.forEach(y=> cells += `<td class="pos">${ratio(y)}</td>`);
+  tr.innerHTML = cells;
   tb.appendChild(tr);
 });
 
+// init
+buildChart(50);
 update();
 </script>
 </body>
