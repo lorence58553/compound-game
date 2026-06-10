@@ -300,7 +300,7 @@ tr:hover td{background:#FAFAF7}
 <label class="hist-row"><input type="checkbox" class="hist-on" data-sym="CSI300"> <span>🇨🇳 沪深 300（点位口径）</span> <a href="https://www.csindex.com.cn/zh-CN/indices/index-detail/000300" target="_blank" class="ds">📎</a></label>
 <label class="hist-row"><input type="checkbox" class="hist-on" data-sym="HSI"> <span>🇭🇰 恒生指数</span> <a href="https://www.hsi.com.hk/eng/indexes/all-indexes/hsi" target="_blank" class="ds">📎</a></label>
 
-<div style="grid-column:1/-1;font-size:11px;color:#888780;font-weight:600;margin-top:8px">📚 长历史窗口（30+ 年，含股息口径）</div>
+<div style="grid-column:1/-1;font-size:11px;color:#888780;font-weight:600;margin-top:8px">📚 长历史窗口（30+ 年，含股息口径，<b style="color:#A32D2D">短年限下自动截取最近 N 年</b>）</div>
 <label class="hist-row"><input type="checkbox" class="hist-on" data-sym="SPX_LONG"> <span>🇺🇸 标普500 总收益 1990-2025（含股息）</span> <a href="https://www.spglobal.com/spdji/en/indices/equity/sp-500/#overview" target="_blank" class="ds">📎</a></label>
 <label class="hist-row"><input type="checkbox" class="hist-on" data-sym="GOLD_LONG"> <span>🥇 黄金 1971-2024（美元计价）</span> <a href="https://www.lbma.org.uk/prices-and-data/precious-metal-prices" target="_blank" class="ds">📎</a></label>
 
@@ -1061,17 +1061,27 @@ function update(){
   if(HIST_DATA){
     Object.keys(HIST_ON).forEach(sym=>{
       if(!HIST_ON[sym] || !HIST_DATA[sym]) return;
-      const rows = HIST_DATA[sym];
-      const startPrice = rows[0][1];
-      const scale = p/startPrice;
+      let rows = HIST_DATA[sym];
       // 长历史数据是年度，短历史是月度
       const isAnnual = (sym==='SPX_LONG' || sym==='GOLD_LONG');
       const isPR = HIST_IS_PR[sym] && DIVIDEND_ON;
       const divRate = isPR ? HIST_DIV[sym] : 0;
+      // 关键修复：长史 + 用户选了较短年限时，截取"最近 maxY 年"的尾段
+      let trimNote = '';
+      if(isAnnual){
+        const totalYears = rows.length-1;
+        if(maxY < totalYears){
+          rows = rows.slice(rows.length-1-maxY);
+          trimNote = `（截取最近 ${maxY} 年：${rows[0][0].slice(0,4)}-${rows[rows.length-1][0].slice(0,4)}）`;
+        } else {
+          trimNote = `（全段 ${rows[0][0].slice(0,4)}-${rows[rows.length-1][0].slice(0,4)}）`;
+        }
+      }
+      const startPrice = rows[0][1];
+      const scale = p/startPrice;
       const useMonthly = !isAnnual && maxY <= 15;
       const data = [];
       if(useMonthly){
-        // 月度精度：用 {x:小数年, y:价格} 对象
         const monthsLimit = Math.min((maxY)*12+1, rows.length);
         for(let i=0; i<monthsLimit; i++){
           const yrs = i/12;
@@ -1079,7 +1089,6 @@ function update(){
           data.push({x: yrs, y: px});
         }
       } else {
-        // 年线
         const step = isAnnual ? 1 : 12;
         for(let y=0; y<=maxY; y++){
           const idx = y*step;
@@ -1087,10 +1096,10 @@ function update(){
           else data.push(null);
         }
       }
-      const dataYears = isAnnual ? rows.length-1 : Math.floor(rows.length/12);
+      const totalYears = isAnnual ? (HIST_DATA[sym].length-1) : Math.floor(HIST_DATA[sym].length/12);
       const divTag = isPR ? `（含股息 +${(divRate*100).toFixed(1)}%）` : (HIST_IS_PR[sym]?'（PR价格指数）':'');
       datasets.push({
-        label: HIST_LABEL[sym]+`实盘 ~${dataYears}年`+divTag+(maxY>dataYears?'，超出后断开':''),
+        label: HIST_LABEL[sym]+`实盘 ~${totalYears}年`+divTag+trimNote+(!isAnnual && maxY>totalYears?'，超出后断开':''),
         data: data,
         borderColor: HIST_COLOR[sym],
         backgroundColor: HIST_COLOR[sym]+'05',
