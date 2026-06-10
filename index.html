@@ -147,10 +147,23 @@ tr:hover td{background:#FAFAF7}
 
 <div id="curvesGrid" class="curves-grid"></div>
 
-<div style="margin-bottom:14px">
-<div class="note" style="margin-bottom:8px;color:#5F5E5A">点一个标的，**应用到当前选中的曲线**（绿色圆点标记）：</div>
+<details id="companiesDetails" style="margin-bottom:14px;border:1px solid rgba(0,0,0,0.10);border-radius:10px;overflow:hidden">
+<summary style="padding:12px 16px;background:#F8F7F2;cursor:pointer;font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;user-select:none;list-style:none">
+<span style="display:inline-block;width:18px;text-align:center;transition:transform .2s" id="cmpToggle">▶</span>
+<span>📚 选标的库（点击展开 · 48 个全球标的，按地区/类型分组）</span>
+<span style="margin-left:auto;font-size:12px;color:#888780">应用到当前选中的曲线</span>
+</summary>
+<div style="padding:14px 16px;background:#fff">
+<div class="note" style="margin-bottom:10px;color:#5F5E5A">点一个标的，会**应用到当前选中的曲线**（上方曲线卡片绿色●标记）。也可以直接在曲线卡里手动输年化。</div>
 <div id="companies" class="companies"></div>
 </div>
+</details>
+
+<style>
+#companiesDetails summary::-webkit-details-marker{display:none}
+#companiesDetails[open] #cmpToggle{transform:rotate(90deg)}
+#companiesDetails:hover summary{background:#F1EFE8}
+</style>
 
 <div class="metrics" id="metricsWrap"></div>
 
