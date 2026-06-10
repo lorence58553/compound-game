@@ -98,6 +98,11 @@ tr:hover td{background:#FAFAF7}
 <div class="ctrl">
 <label>最大年限</label>
 <select id="maxYear">
+<option value="1">1 年（实盘对照·短期）</option>
+<option value="5">5 年（实盘对照·短期）</option>
+<option value="10">10 年（实盘对照·完整窗口）</option>
+<option value="15">15 年</option>
+<option value="20">20 年</option>
 <option value="30">30 年</option>
 <option value="40">40 年</option>
 <option value="50" selected>50 年</option>
@@ -196,14 +201,24 @@ tr:hover td{background:#FAFAF7}
 <details class="sub-fold">
 <summary><span class="ftog">▼</span><span>📜 真实股价叠加（近 10 年月线，后复权）</span></summary>
 <div class="sub-fold-body">
-<div style="font-size:13px;color:#5F5E5A;margin-bottom:10px">把茅台/腾讯/苹果/标普 500 近 10 年的真实月线"等比缩放"叠加到主图——你会看到<b>真实路径不是平滑曲线，但长期趋势仍然向上</b>。</div>
-<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px">
+
+<div class="note" style="background:#FFF8E5;border-left:3px solid #E8A33C;padding:12px 16px;border-radius:6px;margin-bottom:12px;color:#5F4A1A;line-height:1.7">
+<b>📖 使用说明（重要）</b><br>
+1️⃣ <b>先把"最大年限"调到 1/5/10 年</b>（顶上下拉，前 3 项专门给真实数据用）。如果年限选 30/50/70，真实曲线只占图最左 1/5，会被压扁成贴着 X 轴的小弯钩。<br>
+2️⃣ <b>真实数据仅有 10 年窗口</b>（2015-09 ~ 2026-06，月线后复权），10 年之后的位置会断开（无数据）。<br>
+3️⃣ <b>所有曲线起点等比缩放到本金（默认 ¥10 万）</b>，仅做"路径形态对比"——看真实路径多么曲折但依然向上。<br>
+4️⃣ <b>推荐玩法</b>：年限选 <b>10 年</b>，开 1-2 条理论曲线（比如 10% / 13%）+ 勾选"苹果"或"标普 500"——你会发现：真实苹果<b>跑赢了 13% 理论曲线</b>，但路径上有数次 -20%~-30% 回撤。
+</div>
+
+<div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;align-items:center">
+<button class="preset-btn" id="histQuickBtn" style="background:#E6F1FB;border-color:#185FA5">⚡ 一键切换到 10 年视图</button>
 <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="MOUTAI"> 🇨🇳 茅台 (sh600519, 后复权)</label>
 <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="TENCENT"> 🇭🇰 腾讯 (00700, 后复权)</label>
 <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="APPLE"> 🇺🇸 苹果 (AAPL, 后复权)</label>
 <label style="display:flex;align-items:center;gap:6px"><input type="checkbox" class="hist-on" data-sym="SPX"> 🇺🇸 标普 500</label>
 </div>
-<div class="note" style="margin-top:8px">真实数据等比缩放到与本金 ¥10 万起点重合，仅做"路径形态对比"用，不代表投资回报。</div>
+
+<div class="note" style="margin-top:8px">数据时间窗：2015-09 至 2026-06（约 10.7 年）· 月度采样后下采样为年线 · 数据源：westock-data 后复权 K 线</div>
 </div>
 </details>
 
@@ -649,23 +664,22 @@ function update(){
       if(!HIST_ON[sym] || !HIST_DATA[sym]) return;
       const rows = HIST_DATA[sym];
       const startPrice = rows[0][1];
-      const months = Math.min(rows.length, (maxY+1)*12);
-      // 取 startPrice 缩放到 p
       const scale = p/startPrice;
-      // 把月线下采样为年线（每 12 个月取一个）
+      // 年线下采样：每 12 个月取一个点
       const data = [];
       for(let y=0; y<=maxY; y++){
         const idx = y*12;
         if(idx<rows.length) data.push(rows[idx][1]*scale);
         else data.push(null);
       }
+      const dataYears = Math.floor(rows.length/12);
       datasets.push({
-        label: HIST_LABEL[sym]+'（10年实际路径）',
+        label: HIST_LABEL[sym]+`（实盘 ~${dataYears} 年`+(maxY>dataYears?'，超出后断开':'')+'）',
         data: data,
         borderColor: HIST_COLOR[sym],
         backgroundColor: HIST_COLOR[sym]+'05',
         borderWidth: 2.5, pointRadius:3, pointStyle:'rectRot', tension:0.1,
-        borderDash:[2,3], spanGaps:false
+        borderDash:[4,3], spanGaps:false
       });
     });
   }
@@ -680,7 +694,7 @@ function update(){
   if(!baseLine){ wrap.innerHTML = '<div class="m"><div class="lbl">至少启用一条曲线</div></div>'; $('summary').innerHTML=''; renderLegend(datasets); return; }
   const baseR = baseLine.rate/100;
   const baseArr = fv(p,baseR,maxY,add,BLACK_SWANS);
-  const ms = [5,10,20,30,40,50,60,70].filter(y=>y<=maxY);
+  const ms = (maxY<=10 ? [1,3,5,7,10] : maxY<=20 ? [1,5,10,15,20] : [5,10,20,30,40,50,60,70]).filter(y=>y<=maxY);
 
   // 计算每条曲线在每个里程碑的值
   const calcArr = c => c.delay&&c.delay>0
@@ -852,8 +866,23 @@ const HIST_COLOR = {MOUTAI:'#A32D2D', TENCENT:'#185FA5', APPLE:'#5F5E5A', SPX:'#
 const HIST_LABEL = {MOUTAI:'🇨🇳 茅台真实', TENCENT:'🇭🇰 腾讯真实', APPLE:'🇺🇸 苹果真实', SPX:'🇺🇸 标普真实'};
 let HIST_ON = {MOUTAI:false, TENCENT:false, APPLE:false, SPX:false};
 document.querySelectorAll('.hist-on').forEach(el=>el.onchange=e=>{
-  HIST_ON[e.target.dataset.sym] = e.target.checked; update();
+  HIST_ON[e.target.dataset.sym] = e.target.checked;
+  // 第一次勾选时如果年限>10，提醒并自动调到 10 年
+  const anyOn = Object.values(HIST_ON).some(v=>v);
+  if(anyOn && +$('maxYear').value > 10){
+    $('maxYear').value = '10';
+  }
+  update();
 });
+$('histQuickBtn').onclick = ()=>{
+  $('maxYear').value = '10';
+  // 默认勾选标普500（最稳）
+  if(!Object.values(HIST_ON).some(v=>v)){
+    HIST_ON.SPX = true;
+    document.querySelector('.hist-on[data-sym="SPX"]').checked = true;
+  }
+  update();
+};
 /* ======== 模式 / 刻度切换 ======== */
 const EXPLAIN = {
   linear:'<b>① 指数样子 · 线性 Y 轴</b><br>Y 轴每格代表"<b>等量金钱</b>"。复利的本质是每年按百分比增长，曲线<b>越往后越陡</b>，前 20 年贴地，第 30-50 年突然起飞——经典的<b>曲棍球棒</b>。<br>👉 用这个视图：<b>给孩子和家人</b>看，让他们感受时间的爆发力。',
