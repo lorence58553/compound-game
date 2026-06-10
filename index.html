@@ -83,7 +83,10 @@ tr:hover td{background:#FAFAF7}
 <h2>一、动手玩：复利模拟器（最多 4 条曲线 + 通胀基准）</h2>
 <p class="desc">本金 + 自由编辑年化 + 选国家通胀基准——切换"名义 / 真实购买力"看清差异。</p>
 
-<div class="controls">
+<details class="sub-fold" open>
+<summary><span class="ftog">▼</span><span>⚙️ 基础参数（本金、年限、通胀）</span></summary>
+<div class="sub-fold-body">
+<div class="controls" style="margin-bottom:0">
 <div class="ctrl">
 <label>本金 (¥)</label>
 <input id="p" type="number" value="100000" step="1000" min="0">
@@ -122,7 +125,12 @@ tr:hover td{background:#FAFAF7}
 <input id="inflCustom" type="number" value="3" step="0.1" min="0" max="50">
 </div>
 </div>
+</div>
+</details>
 
+<details class="sub-fold" open>
+<summary><span class="ftog">▼</span><span>🎚️ 视图模式 & Y 轴刻度</span></summary>
+<div class="sub-fold-body">
 <div class="tabs-mode">
 <button class="tab-mode active" data-mode="nominal">📈 名义金额（账面数字）</button>
 <button class="tab-mode" data-mode="real">💵 真实购买力（扣通胀）</button>
@@ -143,27 +151,24 @@ tr:hover td{background:#FAFAF7}
 </div>
 </div>
 
-<div id="scaleExplain" class="note" style="margin:6px 0 14px;padding:12px 16px;background:#FFF8E5;border-left:3px solid #E8A33C;border-radius:6px;color:#5F4A1A;line-height:1.7"></div>
+<div id="scaleExplain" class="note" style="margin:6px 0 0;padding:12px 16px;background:#FFF8E5;border-left:3px solid #E8A33C;border-radius:6px;color:#5F4A1A;line-height:1.7"></div>
+</div>
+</details>
 
-<div id="curvesGrid" class="curves-grid"></div>
+<details class="sub-fold" open>
+<summary><span class="ftog">▼</span><span>📈 4 条曲线设定</span></summary>
+<div class="sub-fold-body">
+<div id="curvesGrid" class="curves-grid" style="margin-bottom:0"></div>
+</div>
+</details>
 
-<details id="companiesDetails" style="margin-bottom:14px;border:1px solid rgba(0,0,0,0.10);border-radius:10px;overflow:hidden">
-<summary style="padding:12px 16px;background:#F8F7F2;cursor:pointer;font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;user-select:none;list-style:none">
-<span style="display:inline-block;width:18px;text-align:center;transition:transform .2s" id="cmpToggle">▶</span>
-<span>📚 选标的库（点击展开 · 48 个全球标的，按地区/类型分组）</span>
-<span style="margin-left:auto;font-size:12px;color:#888780">应用到当前选中的曲线</span>
-</summary>
-<div style="padding:14px 16px;background:#fff">
+<details id="companiesDetails" class="sub-fold" style="margin-bottom:14px">
+<summary><span class="ftog">▶</span><span>📚 选标的库（48 个全球标的，按地区/类型分组）</span><span style="margin-left:auto;font-size:12px;color:#888780">应用到当前选中的曲线</span></summary>
+<div class="sub-fold-body">
 <div class="note" style="margin-bottom:10px;color:#5F5E5A">点一个标的，会**应用到当前选中的曲线**（上方曲线卡片绿色●标记）。也可以直接在曲线卡里手动输年化。</div>
 <div id="companies" class="companies"></div>
 </div>
 </details>
-
-<style>
-#companiesDetails summary::-webkit-details-marker{display:none}
-#companiesDetails[open] #cmpToggle{transform:rotate(90deg)}
-#companiesDetails:hover summary{background:#F1EFE8}
-</style>
 
 <div class="metrics" id="metricsWrap"></div>
 
@@ -172,8 +177,10 @@ tr:hover td{background:#FAFAF7}
 <div id="summary" class="summary"></div>
 </section>
 
-<section class="card">
-<h2>二、家庭资产组合模拟器 🏠</h2>
+<section class="card section-fold">
+<details open>
+<summary class="card-summary"><h2 style="display:inline">二、家庭资产组合模拟器 🏠</h2><span class="ftog">▼</span></summary>
+<div class="sub-fold-body" style="padding-top:0">
 <p class="desc">拖几个滑块，做出"30% 沪深 + 30% 标普 + 20% 中债 + 10% 黄金 + 10% 现金"这样的组合，自动算混合年化曲线 + 真实购买力。给爱人和孩子讲资产配置的最直观工具。</p>
 
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
@@ -205,8 +212,69 @@ tr:hover td{background:#FAFAF7}
 </div>
 
 <div id="portfolioSummary" class="summary" style="background:#FFF8E5;color:#5F4A1A"></div>
+</div>
+</details>
+</section>
+
+<section class="card section-fold">
+<details>
+<summary class="card-summary"><h2 style="display:inline">三、Δr × 时间矩阵 📐</h2><span class="ftog">▶</span></summary>
+<div class="sub-fold-body" style="padding-top:0">
+<p class="desc">基准 8%，每提高一点收益率，N 年后多多少倍？</p>
+<div style="overflow-x:auto">
+<table id="dtable">
+<thead><tr><th>每年多赚</th><th>5 年</th><th>10 年</th><th>20 年</th><th>30 年</th><th>50 年</th><th>70 年</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+<p class="note">解释："对比终值 ÷ 基准终值 − 1"。+2% / 30 年 = 75% 意思是同样 1 万元，30 年后比基准多 75% 的钱。</p>
+</div>
+</details>
+</section>
+
+<section class="card section-fold">
+<details>
+<summary class="card-summary"><h2 style="display:inline">四、家庭话术：怎么讲给孩子和爱人 💬</h2><span class="ftog">▶</span></summary>
+<div class="sub-fold-body" style="padding-top:0">
+<div class="story">
+<div class="it"><div class="h">折纸类比（讲给孩子）</div><div class="p">"一张纸对折 1 次是 2 层。对折 30 次会比珠穆朗玛峰还高。复利就是每天给自己折一次纸。"</div></div>
+<div class="it"><div class="h">雪球类比（讲给爱人）</div><div class="p">"100 元雪球，每年长大 10%，30 年后是 1745 元。但 12% 的雪球，30 年后是 2996 元——多 71%。这 2% 看起来不重要，时间替我们记账。"</div></div>
+<div class="it"><div class="h">果树类比（讲给自己）</div><div class="p">"种树最好的时间是 20 年前，其次是现在。果树头三年没产出，第四年才开始结果。坚持过临界点，复利就接管了。"</div></div>
+</div>
+</div>
+</details>
+</section>
+
+<section class="card section-fold">
+<details>
+<summary class="card-summary"><h2 style="display:inline">五、温馨提醒 ⚠️</h2><span class="ftog">▶</span></summary>
+<div class="sub-fold-body" style="padding-top:0">
+<p class="note">长期 ROE/年化只是"复利速度"的近似上限——实际股东回报还要看：① 估值买卖点；② 股利再投；③ 公司是否长期保留护城河。<br>
+苹果 ROE 171% 因大量回购致净资产极低，正常化后约 30-35%。比特币 60% 是 15 年回望，绝不可外推 70 年。债券 3-4% 是当前低利率环境，2000 年代曾达 4-5%。<br>
+通胀基准用的是<b>历史 CPI 长期均值</b>，未来路径未必复制。本工具仅作教育用途，不构成投资建议。</p>
+</div>
+</details>
+</section>
 
 <style>
+/* 折叠相关公共样式 */
+details.sub-fold{margin-bottom:14px;border:1px solid rgba(0,0,0,0.08);border-radius:10px;overflow:hidden;background:#fff}
+details.sub-fold > summary{padding:12px 16px;background:#F8F7F2;cursor:pointer;font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px;user-select:none;list-style:none;transition:background .15s}
+details.sub-fold > summary::-webkit-details-marker{display:none}
+details.sub-fold > summary:hover{background:#F1EFE8}
+details.sub-fold .ftog{display:inline-block;width:18px;text-align:center;font-size:12px;color:#5F5E5A;transition:transform .2s}
+details.sub-fold[open] > summary > .ftog{transform:rotate(0)}
+details.sub-fold:not([open]) > summary > .ftog{transform:rotate(-90deg)}
+.sub-fold-body{padding:14px 16px;background:#fff}
+/* 整张大卡片折叠 */
+section.section-fold{padding:0}
+section.section-fold > details > summary.card-summary{padding:18px 24px;list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:12px;transition:background .15s}
+section.section-fold > details > summary.card-summary::-webkit-details-marker{display:none}
+section.section-fold > details > summary.card-summary:hover{background:#FAFAF7}
+section.section-fold > details > summary.card-summary h2{font-size:18px;font-weight:500;margin:0}
+section.section-fold > details > summary.card-summary > .ftog{font-size:14px;color:#5F5E5A;transition:transform .2s}
+section.section-fold > details:not([open]) > summary.card-summary > .ftog{transform:rotate(-90deg)}
+section.section-fold > details > .sub-fold-body{padding:0 24px 24px}
 .preset-btn{padding:8px 14px;border:1px solid #B4B2A9;border-radius:99px;background:#fff;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
 .preset-btn:hover{border-color:#185FA5;background:#E6F1FB}
 .alloc-card{padding:12px 14px;border:1px solid rgba(0,0,0,0.10);border-radius:10px;background:#fff}
@@ -218,35 +286,11 @@ tr:hover td{background:#FAFAF7}
 .alloc-card input[type=range]{flex:1;accent-color:#185FA5}
 .alloc-card input[type=number]{width:60px;padding:4px 6px;border:0.5px solid #B4B2A9;border-radius:6px;font-size:13px;text-align:right}
 </style>
-</section>
 
-<section class="card">
-<h2>三、Δr × 时间矩阵</h2>
-<p class="desc">基准 8%，每提高一点收益率，N 年后多多少倍？</p>
-<div style="overflow-x:auto">
-<table id="dtable">
-<thead><tr><th>每年多赚</th><th>5 年</th><th>10 年</th><th>20 年</th><th>30 年</th><th>50 年</th><th>70 年</th></tr></thead>
-<tbody></tbody>
-</table>
+<div style="display:flex;justify-content:center;gap:10px;margin:-8px 0 24px;flex-wrap:wrap">
+<button id="expandAll" class="preset-btn" style="background:#E6F1FB;border-color:#185FA5">📂 全部展开</button>
+<button id="collapseAll" class="preset-btn">📁 全部折叠</button>
 </div>
-<p class="note">解释："对比终值 ÷ 基准终值 − 1"。+2% / 30 年 = 75% 意思是同样 1 万元，30 年后比基准多 75% 的钱。</p>
-</section>
-
-<section class="card">
-<h2>四、家庭话术：怎么讲给孩子和爱人</h2>
-<div class="story">
-<div class="it"><div class="h">折纸类比（讲给孩子）</div><div class="p">"一张纸对折 1 次是 2 层。对折 30 次会比珠穆朗玛峰还高。复利就是每天给自己折一次纸。"</div></div>
-<div class="it"><div class="h">雪球类比（讲给爱人）</div><div class="p">"100 元雪球，每年长大 10%，30 年后是 1745 元。但 12% 的雪球，30 年后是 2996 元——多 71%。这 2% 看起来不重要，时间替我们记账。"</div></div>
-<div class="it"><div class="h">果树类比（讲给自己）</div><div class="p">"种树最好的时间是 20 年前，其次是现在。果树头三年没产出，第四年才开始结果。坚持过临界点，复利就接管了。"</div></div>
-</div>
-</section>
-
-<section class="card">
-<h2>五、温馨提醒</h2>
-<p class="note">长期 ROE/年化只是"复利速度"的近似上限——实际股东回报还要看：① 估值买卖点；② 股利再投；③ 公司是否长期保留护城河。<br>
-苹果 ROE 171% 因大量回购致净资产极低，正常化后约 30-35%。比特币 60% 是 15 年回望，绝不可外推 70 年。债券 3-4% 是当前低利率环境，2000 年代曾达 4-5%。<br>
-通胀基准用的是<b>历史 CPI 长期均值</b>，未来路径未必复制。本工具仅作教育用途，不构成投资建议。</p>
-</section>
 
 <footer class="foot">
 <div>Made with ❤️ for 牧西的家人 · 复利的秘密 · 2026</div>
@@ -256,6 +300,18 @@ tr:hover td{background:#FAFAF7}
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// 全部展开/全部折叠
+document.getElementById('expandAll').addEventListener('click',()=>{
+  document.querySelectorAll('details').forEach(d=>d.open=true);
+});
+document.getElementById('collapseAll').addEventListener('click',()=>{
+  document.querySelectorAll('details').forEach(d=>{
+    // 第一个section的核心子折叠保留打开（用户体验：折叠到只剩主图）
+    d.open=false;
+  });
+});
+</script>
 <script>
 /* ======== 数据 ======== */
 const COMPANIES = [
