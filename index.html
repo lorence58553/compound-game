@@ -1650,13 +1650,36 @@ function buildPortfolioUI(){
     if(idx>=0){ ASSETS.splice(idx,1); delete PORTFOLIO[k]; buildPortfolioUI(); updatePortfolio(); }
   });
   grid.querySelectorAll('input[type=range]').forEach(el=>el.oninput=e=>{
-    PORTFOLIO[e.target.dataset.key] = +e.target.value;
-    buildPortfolioUI(); updatePortfolio();
+    const key = e.target.dataset.key;
+    const v = +e.target.value;
+    PORTFOLIO[key] = v;
+    // 只更新当前卡片的显示，不重建整个 UI（避免拖动失焦、输入跳位）
+    const card = e.target.closest('.alloc-card');
+    if(card){
+      const numIn = card.querySelector('input[type=number]');
+      if(numIn) numIn.value = v;
+      const pct = card.querySelector('.pct');
+      if(pct) pct.textContent = v+'%';
+      const a = ASSETS.find(x=>x.key===key);
+      if(a) card.style.borderColor = v>0 ? a.color : 'rgba(0,0,0,0.10)';
+    }
+    updatePortfolio();
   });
   grid.querySelectorAll('input[type=number]').forEach(el=>el.oninput=e=>{
     let v = Math.max(0, Math.min(100, +e.target.value || 0));
-    PORTFOLIO[e.target.dataset.key] = v;
-    buildPortfolioUI(); updatePortfolio();
+    const key = e.target.dataset.key;
+    PORTFOLIO[key] = v;
+    // 同步 range，但不重建 UI
+    const card = e.target.closest('.alloc-card');
+    if(card){
+      const rng = card.querySelector('input[type=range]');
+      if(rng) rng.value = v;
+      const pct = card.querySelector('.pct');
+      if(pct) pct.textContent = v+'%';
+      const a = ASSETS.find(x=>x.key===key);
+      if(a) card.style.borderColor = v>0 ? a.color : 'rgba(0,0,0,0.10)';
+    }
+    updatePortfolio();
   });
 }
 
