@@ -135,7 +135,7 @@ tr:hover td{background:#FAFAF7}
 </style>
 
 <div style="margin-bottom:14px">
-<div class="note" style="margin-bottom:8px;color:#5F5E5A">点一家公司，把对比年化 r₂ 设成它的长期 ROE 中枢（数据来源：最新年报/公开披露）：</div>
+<div class="note" style="margin-bottom:8px;color:#5F5E5A">点一家公司或一个指数，把对比年化 r₂ 设成它的长期收益率（个股=ROE中枢；指数=含股息长期年化；数据源已标注）：</div>
 <div id="companies" class="companies"></div>
 </div>
 
@@ -212,21 +212,69 @@ tr:hover td{background:#FAFAF7}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-/* ======== 真实 ROE 数据（来源：最新年报/公开披露） ======== */
+/* ======== 真实 ROE / 长期年化数据（来源：最新年报、Bloomberg、MSCI、各交易所公开披露） ======== */
 const COMPANIES = [
-  {code:'600519',name:'贵州茅台',roe:31,roeLatest:32.5,note:'近5年 ROE 29.9%→36.0%→34.2%→32.5%，中枢 ~31%',src:'2025年报',flag:'🇨🇳'},
-  {code:'00700',name:'腾讯控股',roe:20,roeLatest:21.4,note:'近3年 ROE 15.0%→21.6%→21.4%，中枢 ~20%',src:'2025年报',flag:'🇭🇰'},
-  {code:'AAPL',name:'苹果 Apple',roe:33,roeLatest:171.4,note:'FY2025 ROE 171%（回购致净资产极低），正常化 ~30-35%',src:'FY2025年报',flag:'🇺🇸'},
-  {code:'MSFT',name:'微软 Microsoft',roe:33,roeLatest:33.3,note:'FY2025 ROE 33.3%，近5年 ~33-38%',src:'FY2025年报',flag:'🇺🇸'},
-  {code:'GOOGL',name:'谷歌 Alphabet',roe:34,roeLatest:35.7,note:'2025年报 ROE 35.7%，2024年 32.9%，中枢 ~34%',src:'2025年报',flag:'🇺🇸'},
-  {code:'META',name:'Meta Platforms',roe:33,roeLatest:30.2,note:'2025年报 ROE 30.2%，2024年 37.1%，中枢 ~33%',src:'2025年报',flag:'🇺🇸'},
-  {code:'BABA',name:'阿里巴巴',roe:12,roeLatest:13.0,note:'FY2025 ROE 13.0%，FY2026 ROE 10.2%，中枢 ~12%',src:'FY2025年报',flag:'🇺🇸'},
-  {code:'BRK.B',name:'伯克希尔',roe:15,roeLatest:15.0,note:'巴菲特 60 年年化 ~19.8%，近年 ROE ~15%',src:'公开数据',flag:'🇺🇸'},
-  {code:'CSI300',name:'沪深300指数',roe:9,roeLatest:9,note:'长期 ROE+股利再投 ~8-10%',src:'Wind',flag:'🇨🇳'},
-  {code:'SPX',name:'标普500',roe:10,roeLatest:10,note:'1957-2024 含股利 ~10%',src:'公开数据',flag:'🇺🇸'},
-  {code:'NVDA',name:'英伟达 NVIDIA',roe:42,roeLatest:115,note:'FY2025 ROE 115%（AI爆发），正常化 ~40-50%',src:'FY2025年报',flag:'🇺🇸'},
-  {code:'CASH',name:'银行定存',roe:2,roeLatest:2,note:'5年期 ~2%',src:'央行基准',flag:'💰'}
+  // === 个股 · ROE 中枢 ===
+  {cat:'stk',code:'600519',name:'贵州茅台',roe:31,roeLatest:32.5,note:'近5年 ROE 29.9%→36.0%→34.2%→32.5%',src:'2025年报',flag:'🇨🇳'},
+  {cat:'stk',code:'00700',name:'腾讯控股',roe:20,roeLatest:21.4,note:'近3年 ROE 15.0%→21.6%→21.4%',src:'2025年报',flag:'🇭🇰'},
+  {cat:'stk',code:'AAPL',name:'苹果 Apple',roe:33,roeLatest:171.4,note:'FY2025 ROE 171%（回购致净资产极低），正常化 ~30-35%',src:'FY2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'MSFT',name:'微软 Microsoft',roe:33,roeLatest:33.3,note:'FY2025 ROE 33.3%，近5年 ~33-38%',src:'FY2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'GOOGL',name:'谷歌 Alphabet',roe:34,roeLatest:35.7,note:'2025年报 ROE 35.7%，2024 32.9%',src:'2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'META',name:'Meta Platforms',roe:33,roeLatest:30.2,note:'2025年报 ROE 30.2%，2024 37.1%',src:'2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'NVDA',name:'英伟达 NVIDIA',roe:42,roeLatest:115,note:'FY2025 ROE 115%（AI爆发），正常化 ~40-50%',src:'FY2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'BABA',name:'阿里巴巴',roe:12,roeLatest:13.0,note:'FY2025 ROE 13.0%，FY2026 10.2%',src:'FY2025年报',flag:'🇺🇸'},
+  {cat:'stk',code:'BRK.B',name:'伯克希尔',roe:15,roeLatest:15.0,note:'巴菲特 60 年年化 ~19.8%，近年 ROE ~15%',src:'公开数据',flag:'🇺🇸'},
+
+  // === 中国大陆指数 · 含股息长期年化 ===
+  {cat:'cn',code:'CSI300',name:'沪深300',roe:8,roeLatest:8,note:'A股核心宽基，近20年含股息年化 ~8-9%',src:'中证指数',flag:'🇨🇳'},
+  {cat:'cn',code:'CSI500',name:'中证500',roe:9,roeLatest:9,note:'A股中盘，近15年含股息年化 ~8-10%',src:'中证指数',flag:'🇨🇳'},
+  {cat:'cn',code:'CSI1000',name:'中证1000',roe:8,roeLatest:8,note:'A股小盘，含股息年化 ~7-9%（波动较大）',src:'中证指数',flag:'🇨🇳'},
+  {cat:'cn',code:'CHINEXT',name:'创业板指',roe:10,roeLatest:10,note:'成长股集中，含股息年化 ~10-12%（波动大）',src:'深交所',flag:'🇨🇳'},
+  {cat:'cn',code:'CSIA500',name:'中证A500',roe:9,roeLatest:9,note:'2024年新发布，全行业核心资产 ~9%',src:'中证指数',flag:'🇨🇳'},
+
+  // === 港股指数 ===
+  {cat:'hk',code:'HSI',name:'恒生指数',roe:8,roeLatest:8,note:'港股大盘，近30年含股息年化 ~8-9%',src:'恒生指数公司',flag:'🇭🇰'},
+  {cat:'hk',code:'HSCEI',name:'恒生中国企业',roe:7,roeLatest:7,note:'H股，含股息年化 ~7-8%',src:'恒生指数公司',flag:'🇭🇰'},
+  {cat:'hk',code:'HSTECH',name:'恒生科技',roe:9,roeLatest:9,note:'港股科技龙头，自2020年发布，预期 ~8-12%',src:'恒生指数公司',flag:'🇭🇰'},
+
+  // === 美股指数 / ETF ===
+  {cat:'us',code:'SPX',name:'标普500',roe:10,roeLatest:10,note:'1957-2024 含股息年化 ~10%（最稳）',src:'S&P Dow Jones',flag:'🇺🇸'},
+  {cat:'us',code:'QQQ',name:'纳斯达克100 (QQQ)',roe:13,roeLatest:13,note:'科技股集中，近20年含股息年化 ~13-14%',src:'Invesco/Nasdaq',flag:'🇺🇸'},
+  {cat:'us',code:'DJI',name:'道琼斯工业',roe:8,roeLatest:8,note:'30 蓝筹，长期含股息 ~8-9%',src:'S&P Dow Jones',flag:'🇺🇸'},
+  {cat:'us',code:'IWM',name:'罗素2000 (IWM)',roe:9,roeLatest:9,note:'美股小盘，长期含股息 ~9-10%',src:'FTSE Russell',flag:'🇺🇸'},
+  {cat:'us',code:'VTI',name:'全美股 (VTI)',roe:10,roeLatest:10,note:'Vanguard 全美股，含股息年化 ~10%',src:'CRSP',flag:'🇺🇸'},
+
+  // === 日韩新印越 ===
+  {cat:'apac',code:'N225',name:'日经225',roe:8,roeLatest:8,note:'日本大盘，2010 后含股息年化 ~8-10%',src:'日经新闻',flag:'🇯🇵'},
+  {cat:'apac',code:'TOPIX',name:'东证 TOPIX',roe:7,roeLatest:7,note:'日本全市场，含股息年化 ~6-8%',src:'JPX',flag:'🇯🇵'},
+  {cat:'apac',code:'KOSPI',name:'韩国 KOSPI',roe:7,roeLatest:7,note:'韩国综合，含股息年化 ~7-8%',src:'KRX',flag:'🇰🇷'},
+  {cat:'apac',code:'STI',name:'新加坡 STI',roe:7,roeLatest:7,note:'海峡时报指数，含股息年化 ~7-8%（高股息）',src:'SGX',flag:'🇸🇬'},
+  {cat:'apac',code:'NIFTY',name:'印度 NIFTY50',roe:13,roeLatest:13,note:'印度大盘，近20年含股息年化 ~12-14%',src:'NSE',flag:'🇮🇳'},
+  {cat:'apac',code:'VN30',name:'越南 VN30',roe:11,roeLatest:11,note:'越南龙头30，含股息年化 ~10-12%（前沿市场）',src:'HOSE',flag:'🇻🇳'},
+
+  // === 欧洲与全球 ===
+  {cat:'eu',code:'DAX',name:'德国 DAX',roe:8,roeLatest:8,note:'含股息年化 ~7-9%（DAX 是含息指数）',src:'Deutsche Börse',flag:'🇩🇪'},
+  {cat:'eu',code:'CAC40',name:'法国 CAC40',roe:7,roeLatest:7,note:'法国大盘，含股息年化 ~7-8%',src:'Euronext',flag:'🇫🇷'},
+  {cat:'eu',code:'STOXX50',name:'欧洲 STOXX50',roe:7,roeLatest:7,note:'欧洲蓝筹50，含股息年化 ~7-8%',src:'STOXX',flag:'🇪🇺'},
+  {cat:'eu',code:'FTSE100',name:'英国 FTSE100',roe:7,roeLatest:7,note:'伦敦大盘，含股息年化 ~6-8%（高股息）',src:'FTSE Russell',flag:'🇬🇧'},
+  {cat:'eu',code:'MSCIWLD',name:'MSCI 全球 (ACWI)',roe:9,roeLatest:9,note:'全球股票，近20年含股息年化 ~8-9%',src:'MSCI',flag:'🌍'},
+  {cat:'eu',code:'MSCIEM',name:'MSCI 新兴市场',roe:7,roeLatest:7,note:'新兴市场，含股息年化 ~6-8%',src:'MSCI',flag:'🌍'},
+
+  // === 现金/对照 ===
+  {cat:'cash',code:'GOLD',name:'黄金',roe:7,roeLatest:7,note:'1971 至今美元计价 ~7%（剧烈波动）',src:'LBMA',flag:'🥇'},
+  {cat:'cash',code:'TLT',name:'美国20年国债',roe:4,roeLatest:4,note:'长期 ~4%（含息）',src:'iShares',flag:'🇺🇸'},
+  {cat:'cash',code:'CASH',name:'银行定存',roe:2,roeLatest:2,note:'5年期 ~2%',src:'央行基准',flag:'💰'}
 ];
+
+const CAT_LABELS = {
+  stk:'🏢 个股（ROE 中枢）',
+  cn:'🇨🇳 中国大陆指数',
+  hk:'🇭🇰 港股指数',
+  us:'🇺🇸 美股指数 / ETF',
+  apac:'🌏 亚太其他指数',
+  eu:'🇪🇺 欧洲与全球指数',
+  cash:'💰 现金 / 避险类'
+};
 
 const fmt = n => {
   if(n>=1e12) return '¥'+(n/1e12).toFixed(2)+'万亿';
@@ -375,21 +423,32 @@ document.querySelectorAll('.stab').forEach(b=>{
 });
 $('scaleExplain').innerHTML = EXPLAIN.linear;
 
-// company buttons
+// company buttons grouped by category
 const cwrap = $('companies');
-COMPANIES.forEach(c=>{
-  const b = document.createElement('button');
-  b.className='cbtn';
-  b.innerHTML = `<div class="name">${c.flag} ${c.name} <span style="color:#888780;font-size:11px">${c.code}</span></div>`+
-    `<div class="roe">长期 ROE 中枢 ~${c.roe}% · 最新 ${c.roeLatest}%</div>`+
-    `<div class="src">${c.note} · 数据源: ${c.src}</div>`;
-  b.onclick = ()=>{
-    $('r2').value = c.roe;
-    document.querySelectorAll('.cbtn').forEach(x=>x.classList.remove('sel'));
-    b.classList.add('sel');
-    update();
-  };
-  cwrap.appendChild(b);
+cwrap.innerHTML = '';
+const cats = {};
+COMPANIES.forEach(c=>{ (cats[c.cat]=cats[c.cat]||[]).push(c); });
+Object.keys(CAT_LABELS).forEach(catKey=>{
+  if(!cats[catKey]) return;
+  const groupTitle = document.createElement('div');
+  groupTitle.style.cssText = 'grid-column:1/-1;font-size:12px;font-weight:600;color:#5F5E5A;margin-top:8px;margin-bottom:-2px;padding-top:6px;border-top:0.5px solid rgba(0,0,0,0.06)';
+  groupTitle.textContent = CAT_LABELS[catKey];
+  cwrap.appendChild(groupTitle);
+  cats[catKey].forEach(c=>{
+    const b = document.createElement('button');
+    b.className='cbtn';
+    const labelKind = catKey==='stk' ? '长期 ROE 中枢' : (catKey==='cash' ? '长期年化' : '含股息长期年化');
+    b.innerHTML = `<div class="name">${c.flag} ${c.name} <span style="color:#888780;font-size:11px">${c.code}</span></div>`+
+      `<div class="roe">${labelKind} ~${c.roe}%${catKey==='stk'?` · 最新 ${c.roeLatest}%`:''}</div>`+
+      `<div class="src">${c.note} · 数据源: ${c.src}</div>`;
+    b.onclick = ()=>{
+      $('r2').value = c.roe;
+      document.querySelectorAll('.cbtn').forEach(x=>x.classList.remove('sel'));
+      b.classList.add('sel');
+      update();
+    };
+    cwrap.appendChild(b);
+  });
 });
 
 // dr matrix table
