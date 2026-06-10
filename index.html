@@ -375,6 +375,15 @@ tr:hover td{background:#FAFAF7}
 
 <div id="portfolioGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:14px"></div>
 
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 14px;background:#FFF8E5;border:1px dashed #E8A33C;border-radius:8px;margin-bottom:14px">
+<span style="font-size:12px;color:#5F4A1A;font-weight:500">➕ 添加自定义资产：</span>
+<input id="customAssetName" placeholder="名称（如：北京房产）" style="flex:1;min-width:140px;padding:6px 10px;border:0.5px solid #B4B2A9;border-radius:6px;font-size:13px">
+<input id="customAssetIcon" placeholder="🏠" maxlength="4" style="width:50px;padding:6px 10px;border:0.5px solid #B4B2A9;border-radius:6px;font-size:13px;text-align:center">
+<input id="customAssetRate" type="number" placeholder="年化%" value="6" min="-50" max="200" step="0.1" style="width:80px;padding:6px 10px;border:0.5px solid #B4B2A9;border-radius:6px;font-size:13px">
+<input id="customAssetColor" type="color" value="#5F4A8B" style="width:36px;height:32px;padding:0;border:0.5px solid #B4B2A9;border-radius:6px;cursor:pointer">
+<button id="customAssetAdd" class="preset-btn" style="background:#E8A33C;color:#fff;border-color:#E8A33C">添加</button>
+</div>
+
 <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:14px;background:#F8F7F2;border-radius:10px;margin-bottom:14px">
 <div>
 <div style="font-size:11px;color:#5F5E5A">总仓位</div>
@@ -1559,10 +1568,12 @@ function buildPortfolioUI(){
     const card = document.createElement('div');
     card.className='alloc-card';
     card.style.borderColor = w>0 ? a.color : 'rgba(0,0,0,0.10)';
+    const removeBtn = a.custom ? `<button class="rm-asset" data-key="${a.key}" style="background:none;border:none;cursor:pointer;color:#A32D2D;font-size:14px;padding:0 4px;margin-left:4px" title="删除自定义资产">✕</button>` : '';
     card.innerHTML = `
       <div class="row">
-        <div class="name" style="color:${w>0?a.color:'#2C2C2A'}">${a.name}</div>
+        <div class="name" style="color:${w>0?a.color:'#2C2C2A'}">${a.name}${a.custom?'<span style="font-size:10px;color:#888780;margin-left:4px">自定义</span>':''}</div>
         <div class="pct" style="color:${a.color}">${w}%</div>
+        ${removeBtn}
       </div>
       <div class="ann">预期年化 ${a.rate}%</div>
       <div class="slide-row">
@@ -1571,6 +1582,11 @@ function buildPortfolioUI(){
       </div>
     `;
     grid.appendChild(card);
+  });
+  grid.querySelectorAll('.rm-asset').forEach(el=>el.onclick=e=>{
+    const k = e.target.dataset.key;
+    const idx = ASSETS.findIndex(a=>a.key===k);
+    if(idx>=0){ ASSETS.splice(idx,1); delete PORTFOLIO[k]; buildPortfolioUI(); updatePortfolio(); }
   });
   grid.querySelectorAll('input[type=range]').forEach(el=>el.oninput=e=>{
     PORTFOLIO[e.target.dataset.key] = +e.target.value;
@@ -1633,6 +1649,22 @@ $('applyPortfolioBtn').onclick = ()=>{
 
 buildPortfolioUI();
 updatePortfolio();
+
+/* 自定义资产添加 */
+$('customAssetAdd').onclick = ()=>{
+  const name = $('customAssetName').value.trim();
+  const icon = $('customAssetIcon').value.trim() || '⭐';
+  const rate = +$('customAssetRate').value;
+  const color = $('customAssetColor').value;
+  if(!name){ alert('请填写资产名称'); return; }
+  const key = 'custom_'+Date.now();
+  ASSETS.push({key, name: icon+' '+name, rate, color, custom:true});
+  PORTFOLIO[key] = 0;
+  $('customAssetName').value = '';
+  $('customAssetIcon').value = '';
+  buildPortfolioUI();
+  updatePortfolio();
+};
 
 /* 让通胀变化也刷新组合面板 */
 const _origInflChange = $('inflPreset').onchange;
