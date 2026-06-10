@@ -1088,22 +1088,13 @@ function update(){
       }
       const startPrice = rows[0][1];
       const scale = p/startPrice;
-      const useMonthly = !isAnnual && maxY <= 15;
+      // 统一用年线 array 格式，避免 {x,y} 与 category 轴混合导致 Y 轴量程崩溃
       const data = [];
-      if(useMonthly){
-        const monthsLimit = Math.min((maxY)*12+1, rows.length);
-        for(let i=0; i<monthsLimit; i++){
-          const yrs = i/12;
-          const px = rows[i][1]*scale * Math.pow(1+divRate, yrs);
-          data.push({x: yrs, y: px});
-        }
-      } else {
-        const step = isAnnual ? 1 : 12;
-        for(let y=0; y<=maxY; y++){
-          const idx = y*step;
-          if(idx<rows.length) data.push(rows[idx][1]*scale * Math.pow(1+divRate, y));
-          else data.push(null);
-        }
+      const step = isAnnual ? 1 : 12;
+      for(let y=0; y<=maxY; y++){
+        const idx = y*step;
+        if(idx<rows.length) data.push(rows[idx][1]*scale * Math.pow(1+divRate, y));
+        else data.push(null);
       }
       const totalYears = isAnnual ? (HIST_DATA[sym].length-1) : Math.floor(HIST_DATA[sym].length/12);
       const divTag = isPR ? `（含股息 +${(divRate*100).toFixed(1)}%）` : (HIST_IS_PR[sym]?'（PR价格指数）':'');
@@ -1113,10 +1104,9 @@ function update(){
         borderColor: HIST_COLOR[sym],
         backgroundColor: HIST_COLOR[sym]+'05',
         borderWidth: 2.5,
-        pointRadius: useMonthly?0:3,
+        pointRadius: 3,
         pointStyle: 'rectRot', tension:0.05,
-        borderDash:[4,3], spanGaps:false,
-        parsing: useMonthly?false:undefined
+        borderDash:[4,3], spanGaps:false
       });
     });
   }
