@@ -230,6 +230,35 @@ tr:hover td{background:#FAFAF7}
 <button class="preset-btn" data-era="halfcentury">⏳ 1971-2025 半世纪全景</button>
 </div>
 <div id="eraInfo" style="font-size:12px;color:#5F5E5A;line-height:1.6;padding:10px;background:#F8F7F2;border-radius:6px;display:none"></div>
+
+<div style="margin-top:16px;padding:14px 16px;background:#F1F8F1;border-left:3px solid #1D7A4F;border-radius:8px">
+<div style="font-size:13px;font-weight:600;color:#0F6E56;margin-bottom:8px">🎚️ 自定义时间窗（拖动两端，自由框选历史）</div>
+<div style="font-size:11px;color:#5F5E5A;margin-bottom:12px;line-height:1.6">仅对长史标的有效（标普 1990- / 黄金 1971- / CPI 1971-）。拖动后会自动调整年限，并把长史起点对齐到所选年份。</div>
+
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+<span style="font-size:12px;color:#5F5E5A">起始</span>
+<input id="windowStart" type="range" min="1971" max="2024" step="1" value="1971" style="flex:1;min-width:200px;accent-color:#1D7A4F">
+<span id="windowStartLbl" style="font-weight:600;color:#0F6E56;font-variant-numeric:tabular-nums;min-width:40px">1971</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+<span style="font-size:12px;color:#5F5E5A">结束</span>
+<input id="windowEnd" type="range" min="1972" max="2025" step="1" value="2025" style="flex:1;min-width:200px;accent-color:#A32D2D">
+<span id="windowEndLbl" style="font-weight:600;color:#A32D2D;font-variant-numeric:tabular-nums;min-width:40px">2025</span>
+</div>
+
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px">
+<div style="font-size:13px"><b>窗口</b>：<span id="windowSpan" style="color:#185FA5;font-weight:600">1971 → 2025（55 年）</span></div>
+<button id="windowApply" class="preset-btn" style="background:#1D7A4F;color:#fff;border-color:#1D7A4F">✅ 应用此窗口到主图</button>
+<button id="windowReset" class="preset-btn">↻ 重置为最大</button>
+</div>
+</div>
+
+<div style="margin-top:14px;padding:10px 14px;background:#FFF8E5;border-left:3px solid #E8A33C;border-radius:8px;font-size:12px;color:#5F4A1A;line-height:1.7">
+<b>📍 历史事件标注线</b>（自动叠加到主图 X 轴）<br>
+当主图覆盖 1971-2025 区间时，会在对应年份画上灰色虚线 + 文字（"1973 石油危机"、"1987 黑色星期一"、"2000 互联网泡沫"、"2008 GFC"、"2020 新冠"等）。<br>
+<label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;margin-top:6px"><input type="checkbox" id="historyMarkersOn" checked> 启用历史事件标注</label>
+</div>
+
 </div>
 </details>
 
@@ -935,7 +964,7 @@ function buildCurvesUI(){
 function buildChart(maxY){
   const years = Array.from({length:maxY+1},(_,i)=>i);
   if(chart) chart.destroy();
-  // 自定义 plugin：里程碑竖线 + 黑天鹅竖线
+  // 自定义 plugin：里程碑竖线 + 黑天鹅竖线 + 历史事件标注
   const milestonePlugin = {
     id:'milestones',
     beforeDraw(chart){
@@ -972,6 +1001,30 @@ function buildChart(maxY){
           ctx.fillText(`🦢 ${b.label} -${b.dropPct}%`, x+4, chartArea.top+28);
         }
       });
+      // 历史事件标注（仅当主图覆盖真实年代时）
+      const markersOn = document.getElementById('historyMarkersOn');
+      if(markersOn && markersOn.checked && window.WINDOW_START_YEAR){
+        const startYr = window.WINDOW_START_YEAR;
+        const endYr = startYr + maxY;
+        ctx.setLineDash([2,3]);
+        (window.HISTORY_EVENTS||[]).forEach((ev,i)=>{
+          if(ev.year>=startYr && ev.year<=endYr){
+            const offset = ev.year - startYr;
+            const x = scales.x.getPixelForValue(offset);
+            ctx.strokeStyle = ev.color || 'rgba(95,95,90,0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, chartArea.top);
+            ctx.lineTo(x, chartArea.bottom);
+            ctx.stroke();
+            ctx.fillStyle = ev.color || '#5F5E5A';
+            ctx.font = '10px -apple-system,sans-serif';
+            // 错开高度避免重叠
+            const yLabel = chartArea.top + 44 + (i%4)*14;
+            ctx.fillText(ev.year+' '+ev.label, x+3, yLabel);
+          }
+        });
+      }
       ctx.restore();
     }
   };
@@ -1109,15 +1162,24 @@ function update(){
       const isAnnual = (sym==='SPX_LONG' || sym==='GOLD_LONG' || sym==='CPI_US_LONG');
       const isPR = HIST_IS_PR[sym] && DIVIDEND_ON;
       const divRate = isPR ? HIST_DIV[sym] : 0;
-      // 关键修复：长史 + 用户选了较短年限时，截取"最近 maxY 年"的尾段
+      // 长史 + 用户选了较短年限时，截取窗口段
+      // 优先级：自定义 WINDOW_START_YEAR > 默认"最近 maxY 年"尾段
       let trimNote = '';
       if(isAnnual){
         const totalYears = rows.length-1;
-        if(maxY < totalYears){
+        const firstYear = parseInt(rows[0][0].slice(0,4));
+        const lastYear = parseInt(rows[rows.length-1][0].slice(0,4));
+        if(window.WINDOW_START_YEAR && window.WINDOW_START_YEAR>firstYear){
+          const startIdx = window.WINDOW_START_YEAR - firstYear;
+          if(startIdx>=0 && startIdx<rows.length){
+            rows = rows.slice(startIdx);
+            trimNote = `（自定义窗口：${rows[0][0].slice(0,4)}-${rows[Math.min(maxY,rows.length-1)][0].slice(0,4)}）`;
+          }
+        } else if(maxY < totalYears){
           rows = rows.slice(rows.length-1-maxY);
           trimNote = `（截取最近 ${maxY} 年：${rows[0][0].slice(0,4)}-${rows[rows.length-1][0].slice(0,4)}）`;
         } else {
-          trimNote = `（全段 ${rows[0][0].slice(0,4)}-${rows[rows.length-1][0].slice(0,4)}）`;
+          trimNote = `（全段 ${firstYear}-${lastYear}）`;
         }
       }
       const startPrice = rows[0][1];
@@ -1410,36 +1472,103 @@ document.querySelectorAll('button[data-bs]').forEach(b=>b.onclick=()=>{
 });
 renderBs();
 
+/* ======== 历史事件常量（用于主图标注线） ======== */
+window.HISTORY_EVENTS = [
+  {year:1971, label:'布雷顿森林崩溃', color:'rgba(184,134,11,0.55)'},
+  {year:1973, label:'第一次石油危机', color:'rgba(163,45,45,0.55)'},
+  {year:1979, label:'第二次石油危机', color:'rgba(163,45,45,0.45)'},
+  {year:1980, label:'沃尔克极限加息', color:'rgba(95,95,90,0.55)'},
+  {year:1987, label:'黑色星期一', color:'rgba(163,45,45,0.55)'},
+  {year:1990, label:'日本泡沫破灭', color:'rgba(95,95,90,0.55)'},
+  {year:1997, label:'亚洲金融危机', color:'rgba(163,45,45,0.55)'},
+  {year:2000, label:'互联网泡沫顶', color:'rgba(163,45,45,0.55)'},
+  {year:2001, label:'9·11', color:'rgba(95,95,90,0.55)'},
+  {year:2008, label:'雷曼/GFC', color:'rgba(163,45,45,0.65)'},
+  {year:2009, label:'QE1 启动', color:'rgba(29,122,79,0.55)'},
+  {year:2015, label:'A股股灾', color:'rgba(163,45,45,0.55)'},
+  {year:2018, label:'中美贸易战', color:'rgba(95,95,90,0.55)'},
+  {year:2020, label:'新冠/QE 4', color:'rgba(232,163,60,0.55)'},
+  {year:2022, label:'美联储暴力加息', color:'rgba(163,45,45,0.55)'},
+  {year:2023, label:'AI 行情起点', color:'rgba(29,122,79,0.55)'}
+];
+
 /* ======== 历史时段快速跳转 ======== */
+// startYear=null 表示沿用旧逻辑（取最近 N 年尾段）
 const ERA_PRESETS = {
-  stagflation:{maxY:10, syms:['GOLD_LONG'], note:'1971-1980 美元脱钩金本位 → 双位数通胀 → 黄金 +1657%。<b>把"最大年限"调到 10 年 + 仅勾"黄金长史"</b>，可看到这段史诗级避险行情。'},
-  dotcom:{maxY:10, syms:['SPX_LONG'], note:'1995-2002 互联网泡沫膨胀+破灭。<b>勾标普长史 + 10 年</b>，看 2000 年那个尖顶 + 之后 -49% 的痛苦。'},
-  gfc:{maxY:10, syms:['SPX_LONG','GOLD_LONG','CPI_US_LONG'], note:'2003-2012 含次贷+雷曼+QE1。标普 -57% 后 5 年才回本，但黄金期间 +260%。'},
-  qe:{maxY:15, syms:['SPX_LONG','GOLD_LONG'], note:'2009-2024 美联储大放水 + 标普慢牛 +700%。15 年视图，黄金跑输标普。'},
-  hike:{maxY:5, syms:['SPX_LONG','GOLD_LONG','CPI_US_LONG'], note:'2020-2025 疫情→QE→加息→AI。5 年 CPI 累计 +20%，标普 +90%。'},
-  halfcentury:{maxY:55, syms:['SPX_LONG','GOLD_LONG','CPI_US_LONG'], note:'1971-2025 完整 54 年：标普长史(1990-)、黄金长史(1971-)、CPI 累计(1971-) 三条线，复利的"全景图"。'}
+  stagflation:{maxY:10, startYear:1971, syms:['GOLD_LONG','CPI_US_LONG'], note:'<b>1971-1981 滞胀十年</b>：美元脱钩金本位 → 双位数通胀 → 黄金 +1657%。同期 CPI 也累计 +131%——黄金那段是真正的"通胀避难所"。'},
+  dotcom:{maxY:8, startYear:1995, syms:['SPX_LONG'], note:'<b>1995-2003 互联网泡沫</b>：标普 1995-2000 翻倍 → 2000-2002 -49% 暴跌。看那个尖顶 + V 型反转的真实形态。'},
+  gfc:{maxY:10, startYear:2003, syms:['SPX_LONG','GOLD_LONG','CPI_US_LONG'], note:'<b>2003-2013 GFC 时代</b>：含次贷+雷曼+QE1。标普 2007-2009 -57%，5 年才回本；同期黄金 +260%——危机就是黄金的高光时刻。'},
+  qe:{maxY:13, startYear:2009, syms:['SPX_LONG','GOLD_LONG'], note:'<b>2009-2022 QE 大牛市</b>：美联储史上最大放水 + 标普慢牛 +700%。同期黄金 +130% 显著跑输——和平年代黄金是输家。'},
+  hike:{maxY:5, startYear:2020, syms:['SPX_LONG','GOLD_LONG','CPI_US_LONG'], note:'<b>2020-2025 疫情→加息→AI</b>：5 年 CPI 累计 +20%（购买力损失 17%）；标普 +90%；黄金 +60%。这是你和爱人正在经历的当下。'},
+  halfcentury:{maxY:54, startYear:1971, syms:['SPX_LONG','GOLD_LONG','CPI_US_LONG'], note:'<b>1971-2025 半世纪全景</b>：标普长史、黄金长史、CPI 累计三条线齐发——复利的"全景图"。这一张能把所有金融历史压缩到一屏。'}
 };
 document.querySelectorAll('button[data-era]').forEach(b=>b.onclick=()=>{
   const k = b.dataset.era;
   const p = ERA_PRESETS[k];
   if(!p) return;
-  // 关闭所有实盘
   Object.keys(HIST_ON).forEach(s=>{ HIST_ON[s]=false; });
   document.querySelectorAll('.hist-on').forEach(el=>el.checked=false);
-  // 打开对应的
   p.syms.forEach(s=>{
     HIST_ON[s]=true;
     const el = document.querySelector(`.hist-on[data-sym="${s}"]`);
     if(el) el.checked = true;
   });
-  // 设置年限
   $('maxYear').value = String(p.maxY);
-  // 显示提示
+  // 设置自定义窗口起点 + 同步两个滑块
+  if(p.startYear){
+    window.WINDOW_START_YEAR = p.startYear;
+    if($('windowStart')) $('windowStart').value = p.startYear;
+    if($('windowEnd')) $('windowEnd').value = p.startYear + p.maxY;
+    if($('windowStartLbl')) $('windowStartLbl').textContent = p.startYear;
+    if($('windowEndLbl')) $('windowEndLbl').textContent = p.startYear + p.maxY;
+    if($('windowSpan')) $('windowSpan').innerHTML = `${p.startYear} → ${p.startYear+p.maxY}（${p.maxY} 年）`;
+  }
   $('eraInfo').style.display = '';
   $('eraInfo').innerHTML = p.note;
   buildChart(p.maxY);
   update();
 });
+
+/* ======== 自定义时间窗滑块 ======== */
+function syncWindowLabels(){
+  let s = +$('windowStart').value;
+  let e = +$('windowEnd').value;
+  if(e<=s){ e = s+1; $('windowEnd').value = e; }
+  $('windowStartLbl').textContent = s;
+  $('windowEndLbl').textContent = e;
+  $('windowSpan').innerHTML = `${s} → ${e}（${e-s} 年）`;
+}
+$('windowStart').addEventListener('input', syncWindowLabels);
+$('windowEnd').addEventListener('input', syncWindowLabels);
+$('windowApply').onclick = ()=>{
+  const s = +$('windowStart').value;
+  const e = +$('windowEnd').value;
+  const span = e-s;
+  if(span<1){ alert('结束年份必须大于起始年份'); return; }
+  window.WINDOW_START_YEAR = s;
+  $('maxYear').value = String(span);
+  // 默认勾选三长史标的方便对比
+  let anyHistOn = Object.keys(HIST_ON).some(k=> HIST_ON[k] && (k==='SPX_LONG'||k==='GOLD_LONG'||k==='CPI_US_LONG'));
+  if(!anyHistOn){
+    HIST_ON.SPX_LONG = true; HIST_ON.GOLD_LONG = true;
+    document.querySelector('.hist-on[data-sym="SPX_LONG"]').checked = true;
+    document.querySelector('.hist-on[data-sym="GOLD_LONG"]').checked = true;
+  }
+  $('eraInfo').style.display = '';
+  $('eraInfo').innerHTML = `🎚️ 自定义时间窗：<b>${s} → ${e}</b>（共 ${span} 年）。已自动勾选可用长史曲线 + 主图 X 轴 0 = ${s}。历史事件标注会按真实年份对齐。`;
+  buildChart(span);
+  update();
+};
+$('windowReset').onclick = ()=>{
+  window.WINDOW_START_YEAR = null;
+  $('windowStart').value = 1971;
+  $('windowEnd').value = 2025;
+  syncWindowLabels();
+  $('eraInfo').style.display = 'none';
+  update();
+};
+$('historyMarkersOn').addEventListener('change', ()=>{ if(chart) chart.update('none'); });
+syncWindowLabels();
 
 
 let SCENARIO_ON = false;
@@ -1592,7 +1721,12 @@ $('inflPreset').addEventListener('change',()=>{
 $('inflCustom').addEventListener('input',update);
 
 ['p','add','maxYear'].forEach(id=>$(id).addEventListener('input',update));
-$('maxYear').addEventListener('change',update);
+$('maxYear').addEventListener('change',()=>{
+  // 用户手动调最大年限时，清掉自定义窗口（避免错位）
+  window.WINDOW_START_YEAR = null;
+  if($('eraInfo')) $('eraInfo').style.display='none';
+  update();
+});
 
 /* ======== 家庭资产组合模拟器 ======== */
 const ASSETS = [
